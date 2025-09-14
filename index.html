@@ -486,24 +486,25 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         setLogLevel('debug');
         
         // --- Firebase Setup ---
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDx53uucVLn2qZpKHgm4Zfmn0oq7IqWKDE",
-  authDomain: "my-online-sale-re.firebaseapp.com",
-  projectId: "my-online-sale-re",
-  storageBucket: "my-online-sale-re.firebasestorage.app",
-  messagingSenderId: "897696868123",
-  appId: "1:897696868123:web:a1c31ba969f90ababb15be",
-  measurementId: "G-RP5KG6GY4Y"
-};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Placeholder for Firebase configuration. You must replace this with your project's config.
+        // Go to your Firebase project settings -> Project settings -> General -> Your apps -> select your app
+        // Copy the "Firebase SDK snippet" and paste it here.
+        const firebaseConfig = {
+            apiKey: "AIzaSyDx53uucVLn2qZpKHgm4Zfmn0oq7IqWKDE",
+            authDomain: "my-online-sale-re.firebaseapp.com",
+            projectId: "my-online-sale-re",
+            storageBucket: "my-online-sale-re.firebasestorage.app",
+            messagingSenderId: "897696868123",
+            appId: "1:897696868123:web:a1c31ba969f90ababb15be",
+            measurementId: "G-RP5KG6GY4Y"
+        };
+        const appId = firebaseConfig.projectId;
 
         let db = null;
         let auth = null;
@@ -520,10 +521,27 @@ const firebaseConfig = {
         const collapseIcon = document.getElementById('collapseIcon');
         const expandIcon = document.getElementById('expandIcon');
         
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        
+        let app = null;
+        try {
+            if (firebaseConfig.projectId && firebaseConfig.apiKey && firebaseConfig.authDomain) {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+            } else {
+                throw new Error("Firebase configuration is missing. Please update firebaseConfig with your project's details.");
+            }
+        } catch (error) {
+            console.error("Firebase Initialization Error:", error);
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="max-w-xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center text-red-600">
+                    <p class="text-xl font-bold mb-4">មានបញ្ហាក្នុងការភ្ជាប់ Firebase!</p>
+                    <p>សូមបើកកូដរបស់អ្នក ហើយបន្លែមព័ត៌មាន <span class="font-mono">firebaseConfig</span> របស់គម្រោងអ្នក។</p>
+                </div>
+            `;
+        }
+
         async function authenticateAndLoad() {
             loadingView.style.display = 'flex';
             mainApp.style.display = 'none';
@@ -558,11 +576,7 @@ const firebaseConfig = {
                     }
                 } else {
                     try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
+                        await signInAnonymously(auth);
                     } catch(error) {
                         console.error("Authentication error:", error);
                         showMessage('មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់។ សូមព្យាយាមម្ដងទៀត។');
@@ -570,7 +584,9 @@ const firebaseConfig = {
                 }
             });
         }
-        authenticateAndLoad();
+        if (app) {
+            authenticateAndLoad();
+        }
 
         // --- Modal/Message Box Functions ---
         const messageModal = document.getElementById('messageModal');
