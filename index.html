@@ -329,7 +329,6 @@
                                 <input type="number" id="deliveryFee" placeholder="0.00" min="0" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
                             </div>
                         </div>
-                        <p id="userIdDisplay" class="text-xs text-gray-400 mt-2">User ID: </p>
                     </div>
 
                     <!-- Input Form -->
@@ -486,7 +485,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         setLogLevel('debug');
@@ -507,8 +505,6 @@
         const appId = firebaseConfig.projectId;
 
         let db = null;
-        let auth = null;
-        let userId = null;
         let unsubscribe = null;
         let historyInvoices = []; 
         let currentInvoiceItems = [];
@@ -526,7 +522,6 @@
             if (firebaseConfig.projectId && firebaseConfig.apiKey && firebaseConfig.authDomain) {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
-                auth = getAuth(app);
             } else {
                 throw new Error("Firebase configuration is missing. Please update firebaseConfig with your project's details.");
             }
@@ -542,50 +537,37 @@
             `;
         }
 
-        async function authenticateAndLoad() {
+        async function loadPublicData() {
             loadingView.style.display = 'flex';
             mainApp.style.display = 'none';
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    document.getElementById('userIdDisplay').textContent = `User ID: ${userId}`;
-                    
-                    try {
-                        const invoicesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/invoices`);
-                        const q = query(invoicesCollectionRef);
-                        unsubscribe = onSnapshot(q, (querySnapshot) => {
-                            historyInvoices = [];
-                            querySnapshot.forEach((doc) => {
-                                historyInvoices.push({
-                                    id: doc.id,
-                                    ...doc.data()
-                                });
-                            });
-                            renderHistoryList();
-                            updateDashboard();
-
-                            loadingView.style.display = 'none';
-                            mainApp.style.display = 'flex';
+            
+            try {
+                const invoicesCollectionRef = collection(db, `artifacts/${appId}/public/data/invoices`);
+                const q = query(invoicesCollectionRef);
+                unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    historyInvoices = [];
+                    querySnapshot.forEach((doc) => {
+                        historyInvoices.push({
+                            id: doc.id,
+                            ...doc.data()
                         });
-                    } catch (error) {
-                        console.error("Firebase Auth or Firestore error:", error);
-                        loadingView.style.display = 'none';
-                        mainApp.style.display = 'flex';
-                        showMessage('មានបញ្ហាក្នុងការផ្ទុកទិន្នន័យ។ សូមព្យាយាមម្ដងទៀត។');
-                    }
-                } else {
-                    try {
-                        await signInAnonymously(auth);
-                    } catch(error) {
-                        console.error("Authentication error:", error);
-                        showMessage('មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់។ សូមព្យាយាមម្ដងទៀត។');
-                    }
-                }
-            });
+                    });
+                    renderHistoryList();
+                    updateDashboard();
+                    
+                    loadingView.style.display = 'none';
+                    mainApp.style.display = 'flex';
+                });
+            } catch (error) {
+                console.error("Firestore error:", error);
+                loadingView.style.display = 'none';
+                mainApp.style.display = 'flex';
+                showMessage('មានបញ្ហាក្នុងការផ្ទុកទិន្នន័យ។ សូមព្យាយាមម្ដងទៀត។');
+            }
         }
+        
         if (app) {
-            authenticateAndLoad();
+            loadPublicData();
         }
 
         // --- Modal/Message Box Functions ---
@@ -671,7 +653,6 @@
         const totalSalesCountDisplay = document.getElementById('totalSalesCount');
         const totalRevenueDisplay = document.getElementById('totalRevenue');
         const totalDeliveryFeeDisplay = document.getElementById('totalDeliveryFee');
-        const userIdDisplay = document.getElementById('userIdDisplay');
 
         // Navigation buttons
         const dashboardNavBtn = document.getElementById('dashboardNavBtn');
@@ -905,7 +886,7 @@
             try {
                 showConfirmation('តើអ្នកពិតជាចង់លុបវិក្កយបត្រនេះមែនទេ? ការលុបនេះមិនអាចយកមកវិញបានទេ។', async (result) => {
                     if (result) {
-                        await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/invoices`, docId));
+                        await deleteDoc(doc(db, `artifacts/${appId}/public/data/invoices`, docId));
                         showMessage('បានលុបវិក្កយបត្រដោយជោគជ័យ។');
                     }
                 });
@@ -1038,7 +1019,7 @@
                 };
                 
                 // Save the entire invoice as a single document
-                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/invoices`), invoiceData);
+                await addDoc(collection(db, `artifacts/${appId}/public/data/invoices`), invoiceData);
                 
                 // Get the newly generated invoice number from the sorted array
                 const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp - a.timestamp);
@@ -1061,7 +1042,7 @@
         
         const reprintInvoice = async (event) => {
             const docId = event.currentTarget.dataset.docId;
-            const docRef = doc(db, `artifacts/${appId}/users/${userId}/invoices`, docId);
+            const docRef = doc(db, `artifacts/${appId}/public/data/invoices`, docId);
             try {
                 const invoiceDoc = await getDoc(docRef);
                 if (invoiceDoc.exists()) {
