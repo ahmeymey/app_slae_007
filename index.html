@@ -63,9 +63,83 @@
         .invoice-row:not(:first-child) .customer-info-cell {
             visibility: hidden;
         }
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 60px; /* Default collapsed width */
+            transition: width 0.3s ease-in-out;
+            will-change: width;
+            z-index: 10;
+        }
+        .side-menu.expanded {
+            width: 200px;
+        }
+        .content-area {
+            margin-left: 60px; /* Default margin to match collapsed menu */
+            transition: margin-left 0.3s ease-in-out;
+            padding: 1.5rem;
+        }
+        .content-area.shifted {
+            margin-left: 200px;
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0; /* Light gray for readable text */
+        }
+        body.dark-mode .bg-white {
+            background-color: #2d3748;
+        }
+        body.dark-mode .bg-gray-100 {
+            background-color: #1a202c;
+        }
+        body.dark-mode .bg-gray-50 {
+            background-color: #2d3748;
+        }
+        body.dark-mode .bg-gray-200 {
+            background-color: #4a5568;
+        }
+        body.dark-mode .text-gray-900,
+        body.dark-mode .text-gray-700,
+        body.dark-mode .text-gray-500,
+        body.dark-mode .text-gray-800 {
+            color: #e2e8f0; /* Light gray for readable text */
+        }
+        body.dark-mode .bg-white.hover\\:bg-gray-100:hover {
+            background-color: #4a5568;
+        }
+        body.dark-mode .hover\\:bg-gray-100:hover {
+             background-color: #4a5568;
+        }
+        body.dark-mode .bg-indigo-50 {
+            background-color: #2a384a;
+        }
+        body.dark-mode .bg-green-50 {
+            background-color: #1f3b33;
+        }
+        body.dark-mode .bg-yellow-50 {
+            background-color: #3b361a;
+        }
+        body.dark-mode .text-indigo-700, body.dark-mode .text-indigo-800,
+        body.dark-mode .text-green-700, body.dark-mode .text-green-800,
+        body.dark-mode .text-yellow-700, body.dark-mode .text-yellow-800 {
+            color: #e2e8f0;
+        }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        body.dark-mode input::placeholder, body.dark-mode select::placeholder, body.dark-mode textarea::placeholder {
+            color: #a0aec0;
+        }
+        body.dark-mode .modal-content {
+            background-color: #2d3748;
+        }
     </style>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-100">
 
     <!-- Modal for messages -->
     <div id="messageModal" class="modal">
@@ -97,309 +171,323 @@
     </div>
 
     <!-- Main Application Container -->
-    <div id="mainApp" class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8 hidden">
-        <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-800">កម្មវិធីគ្រប់គ្រងការលក់ Online</h1>
-            <p class="text-gray-500 mt-2">កត់ត្រា និងបោះពុម្ពវិក្កយបត្រលក់</p>
-        </div>
-
-        <!-- Navigation Menu -->
-        <nav class="bg-gray-200 rounded-lg p-2 flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4">
-            <button id="dashboardNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300">
-                ផ្ទាំងគ្រប់គ្រង
+    <div id="mainApp" class="flex w-full hidden">
+        <!-- Side Navigation Menu Bar -->
+        <nav id="sideMenu" class="side-menu bg-gray-900 text-white p-2 flex flex-col items-center">
+            <button id="toggleMenuBtn" class="px-2 py-2 mb-4 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300">
+                <svg id="collapseIcon" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                <svg id="expandIcon" class="w-6 h-6 hidden text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </button>
-            <button id="customerInfoNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300">
-                ព័ត៌មានអតិថិជន
-            </button>
-            <button id="historyNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300">
-                មើលប្រវត្តិទិន្នន័យ
-            </button>
-            <button id="userManagementNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300">
-                គ្រប់គ្រងអ្នកប្រើប្រាស់
-            </button>
+            <div id="menuItems" class="flex flex-col gap-2">
+                <button id="dashboardNavBtn" class="w-full text-left px-4 py-2 rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                    <span class="whitespace-nowrap">ផ្ទាំងគ្រប់គ្រង</span>
+                </button>
+                <button id="customerInfoNavBtn" class="w-full text-left px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zm-1.5 6a4.5 4.5 0 00-4.5 4.5V18h9v-1.5A4.5 4.5 0 0011.5 12z" clip-rule="evenodd" fill-rule="evenodd" /></svg>
+                    <span class="whitespace-nowrap">ព័ត៌មានអតិថិជន</span>
+                </button>
+                <button id="historyNavBtn" class="w-full text-left px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2.75 9a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75z" fill-rule="evenodd" clip-rule="evenodd" /></svg>
+                    <span class="whitespace-nowrap">មើលប្រវត្តិទិន្នន័យ</span>
+                </button>
+            </div>
         </nav>
         
-        <!-- Dashboard View -->
-        <div id="dashboardView" class="hidden">
-            <div class="bg-white rounded-lg p-6 shadow-md">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">ផ្ទាំងគ្រប់គ្រង</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-indigo-50 p-6 rounded-lg shadow-sm">
-                        <p class="text-sm text-indigo-700 font-medium">ចំនួនការលក់សរុប</p>
-                        <p id="totalSalesCount" class="text-3xl font-bold text-indigo-800 mt-1">0</p>
+        <!-- Content Area -->
+        <div id="contentArea" class="content-area flex-grow">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="text-center w-full">
+                         <h1 class="text-3xl font-bold text-gray-800">កម្មវិធីគ្រប់គ្រងការលក់ Online</h1>
+                         <p class="text-gray-500 mt-2">កត់ត្រា និងបោះពុម្ពវិក្កយបត្រលក់</p>
                     </div>
-                    <div class="bg-green-50 p-6 rounded-lg shadow-sm">
-                        <p class="text-sm text-green-700 font-medium">ចំណូលសរុប (ដុល្លារ)</p>
-                        <p id="totalRevenue" class="text-3xl font-bold text-green-800 mt-1">$0.00</p>
-                    </div>
-                    <div class="bg-yellow-50 p-6 rounded-lg shadow-sm">
-                        <p class="text-sm text-yellow-700 font-medium">ចំណូលពីសេវាដឹក</p>
-                        <p id="totalDeliveryFee" class="text-3xl font-bold text-yellow-800 mt-1">$0.00</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Sales Form View (now "ព័ត៌មានអតិថិជន") -->
-        <div id="customerInfoView" class="hidden">
-            <!-- Customer Information Form -->
-            <div class="bg-gray-50 rounded-lg p-6 space-y-4">
-                <h2 class="text-xl font-semibold text-gray-700">ព័ត៌មានអតិថិជន</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label for="customerName" class="block text-sm font-medium text-gray-700">ឈ្មោះអតិថិជន</label>
-                        <input type="text" id="customerName" placeholder="ដូចជា: កញ្ញា សុភា" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                    <div>
-                        <label for="customerPhone" class="block text-sm font-medium text-gray-700">លេខទូរស័ព្ទ</label>
-                        <input type="text" id="customerPhone" placeholder="012 345 678" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                    <div class="md:col-span-1">
-                        <label for="customerAddress" class="block text-sm font-medium text-gray-700">អាសយដ្ឋាន</label>
-                        <input type="text" id="customerAddress" placeholder="ភូមិ X ឃុំ Y" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h3 class="text-sm font-medium text-gray-700">ជម្រើសហាង</h3>
-                    <div class="mt-2 flex items-center space-x-4">
-                        <div class="flex items-center">
-                            <input id="ccrOnlineCheckbox" type="checkbox" name="store" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="ccrOnlineCheckbox" class="ml-2 block text-sm text-gray-900">CCR Online Store</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="yl99CcrCheckbox" type="checkbox" name="store" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="yl99CcrCheckbox" class="ml-2 block text-sm text-gray-900">YL 99CCR</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="ccr168Checkbox" type="checkbox" name="store" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="ccr168Checkbox" class="ml-2 block text-sm text-gray-900">CCR168</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <h3 class="text-sm font-medium text-gray-700">ជម្រើសសម្រាប់ការដឹកជញ្ជូន</h3>
-                    <div class="mt-2 flex items-center space-x-4">
-                        <div class="flex items-center">
-                            <input id="vetCheckbox" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="vetCheckbox" class="ml-2 block text-sm text-gray-900">VET</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="jtCheckbox" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="jtCheckbox" class="ml-2 block text-sm text-gray-900">J&T</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="phnompenhCheckbox" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="phnompenhCheckbox" class="ml-2 block text-sm text-gray-900">ភ្នំពេញ</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <h3 class="text-sm font-medium text-gray-700">ជម្រើសការទូទាត់</h3>
-                    <div class="mt-2 space-y-2">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center">
-                                <input id="acCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <label for="acCheckbox" class="ml-2 block text-sm text-gray-900">AC</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input id="abaCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <label for="abaCheckbox" class="ml-2 block text-sm text-gray-900">ABA</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input id="wingCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <label for="wingCheckbox" class="ml-2 block text-sm text-gray-900">Wing</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input id="trueEmoneyCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                <label for="trueEmoneyCheckbox" class="ml-2 block text-sm text-gray-900">True Emoney</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="paymentNotes" class="block text-sm font-medium text-gray-700 mt-2">កំណត់សម្គាល់បន្ថែម</label>
-                            <input type="text" id="paymentNotes" placeholder="ដាក់លេខTxd ..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h3 class="text-sm font-medium text-gray-700">សេវាដឹក</h3>
-                    <div class="mt-2">
-                        <label for="deliveryFee" class="block text-sm font-medium text-gray-700">តម្លៃសេវាដឹក (ដុល្លារ)</label>
-                        <input type="number" id="deliveryFee" value="0.00" min="0" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input Form -->
-            <div class="bg-gray-50 rounded-lg p-6 space-y-4">
-                <h2 class="text-xl font-semibold text-gray-700">បញ្ចូលព័ត៌មានការលក់</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="col-span-1 md:col-span-2">
-                        <label for="itemName" class="block text-sm font-medium text-gray-700">ឈ្មោះទំនិញ</label>
-                        <input type="text" id="itemName" placeholder="ដូចជា: ក្រែមលាបមុខ" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                    <div>
-                        <label for="itemQuantity" class="block text-sm font-medium text-gray-700">ចំនួន</label>
-                        <input type="number" id="itemQuantity" value="1" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                    <div>
-                        <label for="itemPrice" class="block text-sm font-medium text-gray-700">តម្លៃ (ដុល្លារ)</label>
-                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                    </div>
-                </div>
-                <div class="flex justify-end mt-4 space-x-2">
-                    <button id="addItemBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 shadow-sm">
-                        បន្ថែមទំនិញ
-                    </button>
-                    <button id="clearFormBtn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-300 shadow-sm">
-                        ជម្រះទិន្នន័យ
+                    <button id="themeToggleBtn" class="p-2 rounded-md hover:bg-gray-200 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" id="lightIcon" class="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" id="darkIcon" class="h-6 w-6 text-gray-200 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0015.354 20.354 9.003 9.003 0 0020.354 15.354z" /></svg>
                     </button>
                 </div>
-            </div>
+                <!-- Dashboard View -->
+                <div id="dashboardView" class="hidden">
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">ផ្ទាំងគ្រប់គ្រង</h2>
+                        <div class="mb-6 flex space-x-4">
+                            <div>
+                                <label for="startDate" class="block text-sm font-medium text-gray-700">ចាប់ពីថ្ងៃ</label>
+                                <input type="date" id="startDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                            <div>
+                                <label for="endDate" class="block text-sm font-medium text-gray-700">ដល់ថ្ងៃ</label>
+                                <input type="date" id="endDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-indigo-50 p-6 rounded-lg shadow-sm">
+                                <p class="text-sm text-indigo-700 font-medium">ចំនួនការលក់សរុប</p>
+                                <p id="totalSalesCount" class="text-3xl font-bold text-indigo-800 mt-1">0</p>
+                            </div>
+                            <div class="bg-green-50 p-6 rounded-lg shadow-sm">
+                                <p class="text-sm text-green-700 font-medium">ចំណូលសរុប (ដុល្លារ)</p>
+                                <p id="totalRevenue" class="text-3xl font-bold text-green-800 mt-1">$0.00</p>
+                            </div>
+                            <div class="bg-yellow-50 p-6 rounded-lg shadow-sm">
+                                <p class="text-sm text-yellow-700 font-medium">ចំណូលពីសេវាដឹក</p>
+                                <p id="totalDeliveryFee" class="text-3xl font-bold text-yellow-800 mt-1">$0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Sales Table -->
-            <div class="bg-white rounded-lg p-6 shadow-md">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">បញ្ជីការលក់</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ល.រ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ឈ្មោះទំនិញ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ចំនួន
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    តម្លៃ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ផលបូក
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    លុប
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="salesList" class="bg-white divide-y divide-gray-200">
-                            <!-- Sales items will be inserted here by JavaScript -->
-                        </tbody>
-                        <tfoot>
-                            <tr class="bg-gray-50">
-                                <td colspan="4" class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-gray-900">
-                                    សរុប:
-                                </td>
-                                <td id="totalAmount" class="px-6 py-4 whitespace-nowrap text-left text-base font-bold text-gray-900">
-                                    $0.00
-                                </td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Action Buttons for Customer Info View -->
-            <div class="flex justify-center md:justify-end space-x-4 mt-6">
-                <button id="printBtn" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm2 5V4h6v5H7zm6 3H7v4h6v-4z" clip-rule="evenodd" />
-                    </svg>
-                    បោះពុម្ពវិក្កយបត្រ
-                </button>
-                <button id="clearCurrentListBtn" class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-8a1 1 0 112 0v5a1 1 0 11-2 0v-5z" clip-rule="evenodd" />
-                    </svg>
-                    ជម្រះបញ្ជីបច្ចុប្បន្ន
-                </button>
-            </div>
-        </div>
+                <!-- Main Sales Form View (now "ព័ត៌មានអតិថិជន") -->
+                <div id="customerInfoView" class="hidden">
+                    <!-- Customer Information Form -->
+                    <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-700">ព័ត៌មានអតិថិជន</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="customerName" class="block text-sm font-medium text-gray-700">ឈ្មោះអតិថិជន</label>
+                                <input type="text" id="customerName" placeholder="ដូចជា: កញ្ញា សុភា" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                            <div>
+                                <label for="customerPhone" class="block text-sm font-medium text-gray-700">លេខទូរស័ព្ទ</label>
+                                <input type="text" id="customerPhone" placeholder="012 345 678" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                            <div class="md:col-span-1">
+                                <label for="customerAddress" class="block text-sm font-medium text-gray-700">អាសយដ្ឋាន</label>
+                                <input type="text" id="customerAddress" placeholder="ភូមិ X ឃុំ Y" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h3 class="text-sm font-medium text-gray-700">ជម្រើសហាង</h3>
+                            <div class="mt-2 flex items-center space-x-4">
+                                <div class="flex items-center">
+                                    <input id="ccrOnlineCheckbox" type="checkbox" name="store" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <label for="ccrOnlineCheckbox" class="ml-2 block text-sm text-gray-900">CCR Online Store</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="yl99CcrCheckbox" type="checkbox" name="store" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <label for="yl99CcrCheckbox" class="ml-2 block text-sm text-gray-900">YL 99CCR</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="ccr168Checkbox" type="checkbox" name="store" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <label for="ccr168Checkbox" class="ml-2 block text-sm text-gray-900">CCR168</label>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Data History View -->
-        <div id="historyView" class="hidden">
-            <div class="bg-white rounded-lg p-6 shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-700">ប្រវត្តិទិន្នន័យ</h2>
-                </div>
-                 <div class="mb-4">
-                    <label for="searchQuery" class="block text-sm font-medium text-gray-700">ស្វែងរក</label>
-                    <input type="text" id="searchQuery" placeholder="ស្វែងរកតាមលេខវិក្កយបត្រ ឈ្មោះអតិថិជន លេខទូរស័ព្ទ ឬអាសយដ្ឋាន..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    លេខវិក្កយបត្រ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ឈ្មោះអតិថិជន
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    លេខទូរស័ព្ទ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    អាសយដ្ឋាន
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ឈ្មោះទំនិញ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ចំនួន
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    តម្លៃ
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ផលបូក
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    ជម្រើស
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyList" class="bg-white divide-y divide-gray-200">
-                            <!-- History items will be inserted here by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Action Buttons for History View -->
-                <div class="flex justify-center md:justify-end space-x-4 mt-6">
-                    <button id="downloadDataBtn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 11.586V3a1 1 0 112 0v8.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        ទាញយកទិន្នន័យ
-                    </button>
-                </div>
-            </div>
-        </div>
+                        <div class="mt-4">
+                            <h3 class="text-sm font-medium text-gray-700">ជម្រើសសម្រាប់ការដឹកជញ្ជូន</h3>
+                            <div class="mt-2 flex items-center space-x-4">
+                                <div class="flex items-center">
+                                    <input id="vetRadio" type="radio" name="deliveryOption" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <label for="vetRadio" class="ml-2 block text-sm text-gray-900">VET</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="jtRadio" type="radio" name="deliveryOption" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <label for="jtRadio" class="ml-2 block text-sm text-gray-900">J&T</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="phnompenhRadio" type="radio" name="deliveryOption" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <label for="phnompenhRadio" class="ml-2 block text-sm text-gray-900">ភ្នំពេញ</label>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- User Management View -->
-        <div id="userManagementView" class="hidden">
-            <div class="bg-white rounded-lg p-6 shadow-md text-center">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">គ្រប់គ្រងអ្នកប្រើប្រាស់</h2>
-                <p class="text-gray-600 mb-4">
-                    មុខងារគ្រប់គ្រងអ្នកប្រើប្រាស់ (ដូចជាការបន្ថែម ឬលុបអ្នកប្រើប្រាស់) មិនអាចធ្វើបាននៅក្នុងកម្មវិធីនេះទេ ព្រោះទិន្នន័យរបស់អ្នកត្រូវបានរក្សាទុកជាសាធារណៈ (Public) ដើម្បីងាយស្រួលប្រើប្រាស់ជាក្រុម។
-                </p>
-                <p class="text-gray-600">
-                    ដើម្បីបង្កើតមុខងារគ្រប់គ្រងអ្នកប្រើប្រាស់ពេញលេញ ដែលមានសុវត្ថិភាពសម្រាប់អ្នកប្រើប្រាស់ម្នាក់ៗ និងតម្រូវឲ្យមានគណនីសម្ងាត់ (Private), អ្នកត្រូវកែប្រែរចនាសម្ព័ន្ធកម្មវិធីទាំងមូល។
-                </p>
+                        <div class="mt-4">
+                            <h3 class="text-sm font-medium text-gray-700">ជម្រើសការទូទាត់</h3>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center">
+                                        <input id="acCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="acCheckbox" class="ml-2 block text-sm text-gray-900">AC</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="abaCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="abaCheckbox" class="ml-2 block text-sm text-gray-900">ABA</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="wingCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="wingCheckbox" class="ml-2 block text-sm text-gray-900">Wing</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="trueEmoneyCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="trueEmoneyCheckbox" class="ml-2 block text-sm text-gray-900">True Emoney</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="paymentNotes" class="block text-sm font-medium text-gray-700 mt-2">កំណត់សម្គាល់បន្ថែម</label>
+                                    <input type="text" id="paymentNotes" placeholder="ដាក់លេខTxd ..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h3 class="text-sm font-medium text-gray-700">សេវាដឹក</h3>
+                            <div class="mt-2">
+                                <label for="deliveryFee" class="block text-sm font-medium text-gray-700">តម្លៃសេវាដឹក (ដុល្លារ)</label>
+                                <input type="number" id="deliveryFee" placeholder="0.00" min="0" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                        </div>
+                        <p id="userIdDisplay" class="text-xs text-gray-400 mt-2">User ID: </p>
+                    </div>
+
+                    <!-- Input Form -->
+                    <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-700">បញ្ចូលព័ត៌មានការលក់</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="itemName" class="block text-sm font-medium text-gray-700">ឈ្មោះទំនិញ</label>
+                                <input type="text" id="itemName" placeholder="ដូចជា: ក្រែមលាបមុខ" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                            <div>
+                                <label for="itemQuantity" class="block text-sm font-medium text-gray-700">ចំនួន</label>
+                                <input type="number" id="itemQuantity" value="1" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                            <div>
+                                <label for="itemPrice" class="block text-sm font-medium text-gray-700">តម្លៃ (ដុល្លារ)</label>
+                                <input type="number" id="itemPrice" placeholder="0.00" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-4 space-x-2">
+                            <button id="addItemBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 shadow-sm">
+                                បន្ថែមទំនិញ
+                            </button>
+                            <button id="clearFormBtn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-300 shadow-sm">
+                                ជម្រះទិន្នន័យ
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sales Table -->
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">បញ្ជីការលក់</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ល.រ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ឈ្មោះទំនិញ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ចំនួន
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            តម្លៃ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ផលបូក
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            លុប
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesList" class="bg-white divide-y divide-gray-200">
+                                    <!-- Sales items will be inserted here by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-gray-50">
+                                        <td colspan="4" class="px-6 py-4 whitespace-nowrap text-right text-base font-bold text-gray-900">
+                                            សរុប:
+                                        </td>
+                                        <td id="totalAmount" class="px-6 py-4 whitespace-nowrap text-left text-base font-bold text-gray-900">
+                                            $0.00
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons for Customer Info View -->
+                    <div class="flex justify-center md:justify-end space-x-4 mt-6">
+                        <button id="printBtn" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm2 5V4h6v5H7zm6 3H7v4h6v-4z" clip-rule="evenodd" />
+                            </svg>
+                            បោះពុម្ពវិក្កយបត្រ
+                        </button>
+                        <button id="clearCurrentListBtn" class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-8a1 1 0 112 0v5a1 1 0 11-2 0v-5z" clip-rule="evenodd" />
+                            </svg>
+                            ជម្រះបញ្ជីបច្ចុប្បន្ន
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data History View -->
+                <div id="historyView" class="hidden">
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-700">ប្រវត្តិទិន្នន័យ</h2>
+                        </div>
+                         <div class="mb-4">
+                            <label for="searchQuery" class="block text-sm font-medium text-gray-700">ស្វែងរក</label>
+                            <input type="text" id="searchQuery" placeholder="ស្វែងរកតាមលេខវិក្កយបត្រ ឈ្មោះអតិថិជន លេខទូរស័ព្ទ ឬអាសយដ្ឋាន..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            លេខវិក្កយបត្រ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ឈ្មោះអតិថិជន
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            លេខទូរស័ព្ទ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            អាសយដ្ឋាន
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ឈ្មោះទំនិញ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ចំនួន
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            តម្លៃ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ផលបូក
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ជម្រើស
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyList" class="bg-white divide-y divide-gray-200">
+                                    <!-- History items will be inserted here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Action Buttons for History View -->
+                        <div class="flex justify-center md:justify-end space-x-4 mt-6">
+                            <button id="downloadDataBtn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 11.586V3a1 1 0 112 0v8.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                                ទាញយកទិន្នន័យ
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         setLogLevel('debug');
         
@@ -418,13 +506,19 @@ const firebaseConfig = {
 
         let db = null;
         let auth = null;
+        let userId = null;
         let unsubscribe = null;
-        let historyInvoices = []; // Now stores grouped invoices
+        let historyInvoices = []; 
         let currentInvoiceItems = [];
 
         const mainApp = document.getElementById('mainApp');
         const loadingView = document.getElementById('loadingView');
-
+        const sideMenu = document.getElementById('sideMenu');
+        const contentArea = document.getElementById('contentArea');
+        const menuItems = document.getElementById('menuItems');
+        const collapseIcon = document.getElementById('collapseIcon');
+        const expandIcon = document.getElementById('expandIcon');
+        
         const app = initializeApp(firebaseConfig);
         db = getFirestore(app);
         auth = getAuth(app);
@@ -432,37 +526,48 @@ const firebaseConfig = {
         async function authenticateAndLoad() {
             loadingView.style.display = 'flex';
             mainApp.style.display = 'none';
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                // Use a public collection for all users
-                const invoicesCollectionRef = collection(db, `artifacts/${appId}/public/data/invoices`);
-                const q = query(invoicesCollectionRef);
-                unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    historyInvoices = [];
-                    querySnapshot.forEach((doc) => {
-                        historyInvoices.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    renderHistoryList();
-                    updateDashboard();
 
-                    // Hide loading and show main app after data is loaded
-                    loadingView.style.display = 'none';
-                    mainApp.style.display = 'block';
-                });
-            } catch (error) {
-                console.error("Firebase Auth or Firestore error:", error);
-                loadingView.style.display = 'none';
-                mainApp.style.display = 'block';
-                showMessage('មានបញ្ហាក្នុងការផ្ទុកទិន្នន័យ។ សូមព្យាយាមម្ដងទៀត។');
-            }
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('userIdDisplay').textContent = `User ID: ${userId}`;
+                    
+                    try {
+                        const invoicesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/invoices`);
+                        const q = query(invoicesCollectionRef);
+                        unsubscribe = onSnapshot(q, (querySnapshot) => {
+                            historyInvoices = [];
+                            querySnapshot.forEach((doc) => {
+                                historyInvoices.push({
+                                    id: doc.id,
+                                    ...doc.data()
+                                });
+                            });
+                            renderHistoryList();
+                            updateDashboard();
+
+                            loadingView.style.display = 'none';
+                            mainApp.style.display = 'flex';
+                        });
+                    } catch (error) {
+                        console.error("Firebase Auth or Firestore error:", error);
+                        loadingView.style.display = 'none';
+                        mainApp.style.display = 'flex';
+                        showMessage('មានបញ្ហាក្នុងការផ្ទុកទិន្នន័យ។ សូមព្យាយាមម្ដងទៀត។');
+                    }
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch(error) {
+                        console.error("Authentication error:", error);
+                        showMessage('មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់។ សូមព្យាយាមម្ដងទៀត។');
+                    }
+                }
+            });
         }
         authenticateAndLoad();
 
@@ -515,7 +620,8 @@ const firebaseConfig = {
         const dashboardView = document.getElementById('dashboardView');
         const customerInfoView = document.getElementById('customerInfoView');
         const historyView = document.getElementById('historyView');
-        const userManagementView = document.getElementById('userManagementView');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
         
         const customerNameInput = document.getElementById('customerName');
         const customerPhoneInput = document.getElementById('customerPhone');
@@ -523,9 +629,9 @@ const firebaseConfig = {
         const ccrOnlineCheckbox = document.getElementById('ccrOnlineCheckbox');
         const yl99CcrCheckbox = document.getElementById('yl99CcrCheckbox');
         const ccr168Checkbox = document.getElementById('ccr168Checkbox');
-        const vetCheckbox = document.getElementById('vetCheckbox');
-        const jtCheckbox = document.getElementById('jtCheckbox');
-        const phnompenhCheckbox = document.getElementById('phnompenhCheckbox');
+        const vetRadio = document.getElementById('vetRadio');
+        const jtRadio = document.getElementById('jtRadio');
+        const phnompenhRadio = document.getElementById('phnompenhRadio');
         const acCheckbox = document.getElementById('acCheckbox');
         const abaCheckbox = document.getElementById('abaCheckbox');
         const wingCheckbox = document.getElementById('wingCheckbox');
@@ -548,12 +654,16 @@ const firebaseConfig = {
         const totalSalesCountDisplay = document.getElementById('totalSalesCount');
         const totalRevenueDisplay = document.getElementById('totalRevenue');
         const totalDeliveryFeeDisplay = document.getElementById('totalDeliveryFee');
+        const userIdDisplay = document.getElementById('userIdDisplay');
 
         // Navigation buttons
         const dashboardNavBtn = document.getElementById('dashboardNavBtn');
         const customerInfoNavBtn = document.getElementById('customerInfoNavBtn');
         const historyNavBtn = document.getElementById('historyNavBtn');
-        const userManagementNavBtn = document.getElementById('userManagementNavBtn');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const lightIcon = document.getElementById('lightIcon');
+        const darkIcon = document.getElementById('darkIcon');
+
 
         // Function to handle exclusive checkbox selection for store names
         const handleStoreSelection = (selectedCheckbox) => {
@@ -563,7 +673,6 @@ const firebaseConfig = {
                 }
             });
         };
-
         // Function to handle exclusive checkbox selection for payment methods
         const handlePaymentSelection = (selectedCheckbox) => {
             [acCheckbox, abaCheckbox, wingCheckbox, trueEmoneyCheckbox].forEach(checkbox => {
@@ -580,7 +689,40 @@ const firebaseConfig = {
         if (abaCheckbox) abaCheckbox.addEventListener('change', () => handlePaymentSelection(abaCheckbox));
         if (wingCheckbox) wingCheckbox.addEventListener('change', () => handlePaymentSelection(wingCheckbox));
         if (trueEmoneyCheckbox) trueEmoneyCheckbox.addEventListener('change', () => handlePaymentSelection(trueEmoneyCheckbox));
+        
+        // Autocomplete customer data from history
+        let debounceTimer;
+        customerPhoneInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const phoneNumber = customerPhoneInput.value.trim();
+                if (phoneNumber.length > 5) {
+                    const latestInvoice = historyInvoices.find(invoice => (invoice.customerPhone || '').trim() === phoneNumber);
+                    if (latestInvoice) {
+                        showConfirmation("អតិថិជនចាស់ តើអ្នកចង់អោយកម្មវិធីបំពេញជំនួសទេ", (result) => {
+                            if (result) {
+                                fillCustomerData(latestInvoice);
+                            }
+                        });
+                    }
+                }
+            }, 500);
+        });
 
+        const fillCustomerData = (invoice) => {
+            customerNameInput.value = invoice.customerName || '';
+            customerAddressInput.value = invoice.customerAddress || '';
+            
+            // Uncheck all delivery options
+            vetRadio.checked = false;
+            jtRadio.checked = false;
+            phnompenhRadio.checked = false;
+            
+            // Check the correct delivery option
+            if (invoice.deliveryOption === 'VET') vetRadio.checked = true;
+            else if (invoice.deliveryOption === 'J&T') jtRadio.checked = true;
+            else if (invoice.deliveryOption === 'ភ្នំពេញ') phnompenhRadio.checked = true;
+        };
 
         // Function to add a new item to the local sales list
         const addItem = () => {
@@ -659,26 +801,41 @@ const firebaseConfig = {
         
         // Function to render the history list table
         const renderHistoryList = () => {
-            const query = searchQueryInput.value.toLowerCase();
-            const filteredInvoices = historyInvoices.filter(invoice => {
-                const invoiceNumber = 'C' + (historyInvoices.length - historyInvoices.indexOf(invoice)).toString().padStart(7, '0');
+            const query = searchQueryInput.value.toLowerCase().trim();
+            
+            // Sort invoices by timestamp descending to ensure the most recent is at the top
+            const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+            
+            historyListBody.innerHTML = '';
+
+            const filteredInvoices = sortedInvoices.filter((invoice) => {
                 const customerName = (invoice.customerName || '').toLowerCase();
                 const customerPhone = (invoice.customerPhone || '').toLowerCase();
                 const customerAddress = (invoice.customerAddress || '').toLowerCase();
-                
+                const invoiceNumber = 'c' + (sortedInvoices.length - sortedInvoices.indexOf(invoice)).toString().padStart(7, '0');
+
                 return invoiceNumber.includes(query) ||
                        customerName.includes(query) ||
                        customerPhone.includes(query) ||
                        customerAddress.includes(query);
             });
             
-            historyListBody.innerHTML = '';
-            
-            filteredInvoices.sort((a, b) => b.timestamp - a.timestamp);
+            if (filteredInvoices.length === 0 && query.length > 0) {
+                 historyListBody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="px-6 py-4 text-center text-gray-500">
+                            រកមិនឃើញលទ្ធផលសម្រាប់ "${searchQueryInput.value}"
+                        </td>
+                    </tr>
+                `;
+                 return;
+            }
 
-            filteredInvoices.forEach((invoice, invoiceIndex) => {
-                const invoiceNumber = 'C' + (historyInvoices.length - historyInvoices.indexOf(invoice)).toString().padStart(7, '0');
-                
+            filteredInvoices.forEach((invoice, index) => {
+                const invoiceNumber = 'C' + (sortedInvoices.length - sortedInvoices.indexOf(invoice)).toString().padStart(7, '0');
+                const invoiceDate = invoice.timestamp.toDate().toLocaleDateString('km-KH');
+                const invoiceTime = invoice.timestamp.toDate().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
+
                 invoice.items.forEach((item, itemIndex) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50';
@@ -687,35 +844,41 @@ const firebaseConfig = {
                     }
                     
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 invoice-number-cell">${invoiceNumber}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 customer-info-cell">${invoice.customerName || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 invoice-number-cell">
+                            ${invoiceNumber}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 customer-info-cell">
+                            ${invoice.customerName || 'N/A'}<br>
+                            <span class="text-xs text-gray-500">${invoiceDate} (${invoiceTime})</span>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 customer-info-cell">${invoice.customerPhone || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 customer-info-cell">${invoice.customerAddress || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.name}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.quantity}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${item.price.toFixed(2)}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${item.total.toFixed(2)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button class="delete-item-db text-red-600 hover:text-red-900" data-doc-id="${invoice.id}">លុបវិក្កយបត្រ</button>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center gap-2">
+                             <button class="reprint-invoice text-blue-600 hover:text-blue-900" data-doc-id="${invoice.id}" title="បោះពុម្ពឡើងវិញ">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M5 4v3H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" />
+                                </svg>
+                            </button>
+                            <button class="delete-item-db text-red-600 hover:text-red-900" data-doc-id="${invoice.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
                         </td>
                     `;
                     historyListBody.appendChild(row);
                 });
             });
 
-            if (filteredInvoices.length === 0 && query.length > 0) {
-                historyListBody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="px-6 py-4 text-center text-gray-500">
-                            រកមិនឃើញលទ្ធផលសម្រាប់ "${query}"
-                        </td>
-                    </tr>
-                `;
-            }
-            
-            // Add event listeners to the new delete buttons
             document.querySelectorAll('.delete-item-db').forEach(button => {
                 button.addEventListener('click', deleteItemFromDB);
+            });
+            document.querySelectorAll('.reprint-invoice').forEach(button => {
+                button.addEventListener('click', reprintInvoice);
             });
         };
         
@@ -725,7 +888,7 @@ const firebaseConfig = {
             try {
                 showConfirmation('តើអ្នកពិតជាចង់លុបវិក្កយបត្រនេះមែនទេ? ការលុបនេះមិនអាចយកមកវិញបានទេ។', async (result) => {
                     if (result) {
-                        await deleteDoc(doc(db, `artifacts/${appId}/public/data/invoices`, docId));
+                        await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/invoices`, docId));
                         showMessage('បានលុបវិក្កយបត្រដោយជោគជ័យ។');
                     }
                 });
@@ -740,8 +903,26 @@ const firebaseConfig = {
             let totalSalesCount = 0;
             let totalRevenue = 0;
             let totalDeliveryFee = 0;
+            
+            const startDate = startDateInput.value ? new Date(startDateInput.value) : null;
+            const endDate = endDateInput.value ? new Date(endDateInput.value) : null;
 
-            historyInvoices.forEach(invoice => {
+            const filteredInvoices = historyInvoices.filter(invoice => {
+                const invoiceDate = invoice.timestamp.toDate();
+                let matchesDate = true;
+                if (startDate && invoiceDate < startDate) {
+                    matchesDate = false;
+                }
+                if (endDate) {
+                    const endOfDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59);
+                    if (invoiceDate > endOfDay) {
+                        matchesDate = false;
+                    }
+                }
+                return matchesDate;
+            });
+
+            filteredInvoices.forEach(invoice => {
                 invoice.items.forEach(item => {
                     totalSalesCount++;
                     totalRevenue += item.total;
@@ -763,11 +944,10 @@ const firebaseConfig = {
         };
 
         const getDeliveryOptions = () => {
-            let options = [];
-            if (vetCheckbox.checked) options.push('VET');
-            if (jtCheckbox.checked) options.push('J&T');
-            if (phnompenhCheckbox.checked) options.push('ភ្នំពេញ');
-            return options.join(', ') || 'មិនបានជ្រើសរើស';
+            if (vetRadio.checked) return 'VET';
+            if (jtRadio.checked) return 'J&T';
+            if (phnompenhRadio.checked) return 'ភ្នំពេញ';
+            return 'មិនបានជ្រើសរើស';
         };
 
         const getPaymentOptions = () => {
@@ -784,9 +964,9 @@ const firebaseConfig = {
             customerNameInput.value = '';
             customerPhoneInput.value = '';
             customerAddressInput.value = '';
-            vetCheckbox.checked = false;
-            jtCheckbox.checked = false;
-            phnompenhCheckbox.checked = false;
+            vetRadio.checked = false;
+            jtRadio.checked = false;
+            phnompenhRadio.checked = false;
             ccrOnlineCheckbox.checked = false;
             yl99CcrCheckbox.checked = false;
             ccr168Checkbox.checked = false;
@@ -795,7 +975,7 @@ const firebaseConfig = {
             wingCheckbox.checked = false;
             trueEmoneyCheckbox.checked = false;
             paymentNotesInput.value = '';
-            deliveryFeeInput.value = '0.00';
+            deliveryFeeInput.value = '';
             itemNameInput.value = '';
             itemQuantityInput.value = '1';
             itemPriceInput.value = '';
@@ -841,10 +1021,14 @@ const firebaseConfig = {
                 };
                 
                 // Save the entire invoice as a single document
-                await addDoc(collection(db, `artifacts/${appId}/public/data/invoices`), invoiceData);
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/invoices`), invoiceData);
                 
+                // Get the newly generated invoice number from the sorted array
+                const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp - a.timestamp);
+                const invoiceNumber = 'C' + (sortedInvoices.length + 1).toString().padStart(7, '0');
+
                 // Print the invoice
-                printInvoice();
+                printInvoice(invoiceData, invoiceNumber);
 
                 // Clear the local array after successful save and print
                 currentInvoiceItems = [];
@@ -857,27 +1041,43 @@ const firebaseConfig = {
                 showMessage('មានបញ្ហាក្នុងការរក្សាទុកវិក្កយបត្រ។');
             }
         };
+        
+        const reprintInvoice = async (event) => {
+            const docId = event.currentTarget.dataset.docId;
+            const docRef = doc(db, `artifacts/${appId}/users/${userId}/invoices`, docId);
+            try {
+                const invoiceDoc = await getDoc(docRef);
+                if (invoiceDoc.exists()) {
+                    const invoiceData = invoiceDoc.data();
+                    const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+                    const invoiceIndex = sortedInvoices.findIndex(inv => inv.id === docId);
+                    const invoiceNumber = 'C' + (sortedInvoices.length - invoiceIndex).toString().padStart(7, '0');
+                    printInvoice(invoiceData, invoiceNumber);
+                } else {
+                    showMessage('មិនអាចរកវិក្កយបត្រនេះឃើញទេ។');
+                }
+            } catch (e) {
+                console.error("Error reprinting invoice:", e);
+                showMessage('មានបញ្ហាក្នុងការបោះពុម្ពឡើងវិញ។');
+            }
+        };
 
         // Function to print the invoice from local data
-        const printInvoice = () => {
-            if (currentInvoiceItems.length === 0) {
-                return; // Prevent printing empty invoice
-            }
+        const printInvoice = (invoiceData, invoiceNumber) => {
             
             const now = new Date();
             const formattedDate = now.toLocaleDateString('km-KH', { year: 'numeric', month: 'long', day: 'numeric' });
             const formattedTime = now.toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
-            const firstItem = currentInvoiceItems[0];
-            const customerName = firstItem.customerName || "មិនមានឈ្មោះ";
-            const customerPhone = firstItem.customerPhone || "មិនមានលេខទូរស័ព្ទ";
-            const customerAddress = firstItem.customerAddress || "មិនមានអាសយដ្ឋាន";
-            const deliveryOption = firstItem.deliveryOption || "មិនបានជ្រើសរើស";
-            const paymentOption = firstItem.paymentOption || "មិនបានជ្រើសរើស";
-            const paymentNotes = firstItem.paymentNotes || "គ្មាន";
-            const storeName = firstItem.storeName || "វិក្កយបត្រ";
-            const salesTotal = currentInvoiceItems.reduce((sum, item) => sum + item.total, 0);
-            const deliveryFee = parseFloat(deliveryFeeInput.value) || 0;
+            const customerName = invoiceData.customerName || "មិនមានឈ្មោះ";
+            const customerPhone = invoiceData.customerPhone || "មិនមានលេខទូរស័ព្ទ";
+            const customerAddress = invoiceData.customerAddress || "មិនមានអាសយដ្ឋាន";
+            const deliveryOption = invoiceData.deliveryOption || "មិនបានជ្រើសរើស";
+            const paymentOption = invoiceData.paymentOption || "មិនបានជ្រើសរើស";
+            const paymentNotes = invoiceData.paymentNotes || "គ្មាន";
+            const storeName = invoiceData.storeName;
+            const salesTotal = invoiceData.items.reduce((sum, item) => sum + item.total, 0);
+            const deliveryFee = invoiceData.deliveryFee || 0;
             const finalTotal = salesTotal + deliveryFee;
 
             // Create the invoice content HTML
@@ -885,6 +1085,7 @@ const firebaseConfig = {
                 <div class="p-8">
                     <h1 class="text-2xl font-bold text-center mb-4">${storeName}</h1>
                     <div class="text-sm mb-4">
+                        <p><strong>លេខវិក្កយបត្រ:</strong> ${invoiceNumber}</p>
                         <p><strong>ឈ្មោះអតិថិជន:</strong> ${customerName} | <strong>លេខទូរស័ព្ទ:</strong> ${customerPhone}</p>
                         <p><strong>អាសយដ្ឋាន:</strong> ${customerAddress}</p>
                         <p><strong>ជម្រើសដឹកជញ្ជូន:</strong> ${deliveryOption} | <strong>ជម្រើសការទូទាត់:</strong> ${paymentOption}</p>
@@ -904,7 +1105,7 @@ const firebaseConfig = {
                         <tbody>
             `;
 
-            currentInvoiceItems.forEach(item => {
+            invoiceData.items.forEach(item => {
                 invoiceHTML += `
                     <tr>
                         <td>${item.name}</td>
@@ -962,7 +1163,7 @@ const firebaseConfig = {
 
                 // Create CSV string
                 const headers = ["លេខវិក្កយបត្រ", "ឈ្មោះអតិថិជន", "លេខទូរស័ព្ទ", "អាសយដ្ឋាន", "ឈ្មោះហាង", "ឈ្មោះទំនិញ", "ចំនួន", "តម្លៃ", "ផលបូក", "ជម្រើសដឹកជញ្ជូន", "ជម្រើសការទូទាត់", "កំណត់សម្គាល់", "សេវាដឹក", "កាលបរិច្ឆេទ"];
-                let csv = headers.join(',') + '\n';
+                let csv = "\uFEFF" + headers.join(',') + '\n';
                 
                 const sortedInvoices = [...historyInvoices].sort((a, b) => a.timestamp - b.timestamp);
                 
@@ -1013,10 +1214,9 @@ const firebaseConfig = {
             dashboardView.style.display = 'none';
             customerInfoView.style.display = 'none';
             historyView.style.display = 'none';
-            userManagementView.style.display = 'none';
 
             // Reset active button styles
-            [dashboardNavBtn, customerInfoNavBtn, historyNavBtn, userManagementNavBtn].forEach(btn => {
+            [dashboardNavBtn, customerInfoNavBtn, historyNavBtn].forEach(btn => {
                 btn.classList.remove('bg-white');
             });
 
@@ -1029,9 +1229,6 @@ const firebaseConfig = {
             } else if (viewToShow === 'history') {
                 historyView.style.display = 'block';
                 historyNavBtn.classList.add('bg-white');
-            } else if (viewToShow === 'userManagement') {
-                userManagementView.style.display = 'block';
-                userManagementNavBtn.classList.add('bg-white');
             }
         };
 
@@ -1069,7 +1266,27 @@ const firebaseConfig = {
             renderHistoryList();
             toggleView('history');
         });
-        if (userManagementNavBtn) userManagementNavBtn.addEventListener('click', () => toggleView('userManagement'));
+
+        if (startDateInput) startDateInput.addEventListener('change', updateDashboard);
+        if (endDateInput) endDateInput.addEventListener('change', updateDashboard);
+        
+        // --- Auto Side Menu In/Out with Hover ---
+        sideMenu.addEventListener('mouseenter', () => {
+            sideMenu.classList.add('expanded');
+            menuItems.style.display = 'flex';
+            expandIcon.style.display = 'none';
+            collapseIcon.style.display = 'block';
+            contentArea.classList.add('shifted');
+        });
+
+        sideMenu.addEventListener('mouseleave', () => {
+            sideMenu.classList.remove('expanded');
+            sideMenu.classList.add('collapsed');
+            menuItems.style.display = 'none';
+            expandIcon.style.display = 'block';
+            collapseIcon.style.display = 'none';
+            contentArea.classList.remove('shifted');
+        });
 
         // Add search functionality
         if (searchQueryInput) {
@@ -1086,8 +1303,30 @@ const firebaseConfig = {
         // Add event listener to recalculate total on delivery fee change
         if (deliveryFeeInput) deliveryFeeInput.addEventListener('input', renderSalesList);
 
+        // Dark/Light Theme Toggle
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const body = document.body;
+                body.classList.toggle('dark-mode');
+                
+                const isDarkMode = body.classList.contains('dark-mode');
+                if (isDarkMode) {
+                    lightIcon.style.display = 'none';
+                    darkIcon.style.display = 'block';
+                } else {
+                    lightIcon.style.display = 'block';
+                    darkIcon.style.display = 'none';
+                }
+            });
+        }
+
         // Initial view load
         toggleView('dashboard');
+        sideMenu.classList.remove('expanded');
+        menuItems.style.display = 'none';
+        collapseIcon.style.display = 'none';
+        expandIcon.style.display = 'block';
+        contentArea.classList.remove('shifted');
     </script>
 </body>
 </html>
