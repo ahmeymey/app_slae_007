@@ -19,9 +19,12 @@
             }
             .invoice-print-section {
                 display: block;
-                padding: 20px;
                 font-family: sans-serif;
                 color: #000;
+                width: 80mm;
+                padding: 5mm;
+                box-sizing: border-box;
+                margin: 0;
             }
         }
         /* Custom modal for alerts and confirmations */
@@ -62,27 +65,6 @@
         .invoice-row:not(:first-child) .invoice-number-cell,
         .invoice-row:not(:first-child) .customer-info-cell {
             visibility: hidden;
-        }
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 60px; /* Default collapsed width */
-            transition: width 0.3s ease-in-out;
-            will-change: width;
-            z-index: 10;
-        }
-        .side-menu.expanded {
-            width: 200px;
-        }
-        .content-area {
-            margin-left: 60px; /* Default margin to match collapsed menu */
-            transition: margin-left 0.3s ease-in-out;
-            padding: 1.5rem;
-        }
-        .content-area.shifted {
-            margin-left: 200px;
         }
         /* Dark mode styles */
         body.dark-mode {
@@ -171,41 +153,40 @@
     </div>
 
     <!-- Main Application Container -->
-    <div id="mainApp" class="flex w-full hidden">
-        <!-- Side Navigation Menu Bar -->
-        <nav id="sideMenu" class="side-menu bg-gray-900 text-white p-2 flex flex-col items-center">
-            <button id="toggleMenuBtn" class="px-2 py-2 mb-4 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300">
-                <svg id="collapseIcon" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                <svg id="expandIcon" class="w-6 h-6 hidden text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            </button>
-            <div id="menuItems" class="flex flex-col gap-2">
-                <button id="dashboardNavBtn" class="w-full text-left px-4 py-2 rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-                    <span class="whitespace-nowrap">ផ្ទាំងគ្រប់គ្រង</span>
-                </button>
-                <button id="customerInfoNavBtn" class="w-full text-left px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zm-1.5 6a4.5 4.5 0 00-4.5 4.5V18h9v-1.5A4.5 4.5 0 0011.5 12z" clip-rule="evenodd" fill-rule="evenodd" /></svg>
-                    <span class="whitespace-nowrap">ព័ត៌មានអតិថិជន</span>
-                </button>
-                <button id="historyNavBtn" class="w-full text-left px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2.75 9a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75z" fill-rule="evenodd" clip-rule="evenodd" /></svg>
-                    <span class="whitespace-nowrap">មើលប្រវត្តិទិន្នន័យ</span>
-                </button>
+    <div id="mainApp" class="flex w-full flex-col hidden">
+        <!-- Top Navigation Bar -->
+        <nav class="bg-gray-900 text-white p-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="text-xl font-bold">កម្មវិធីគ្រប់គ្រងការលក់</div>
+                <div class="flex items-center space-x-2">
+                    <button id="dashboardNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                        <span class="whitespace-nowrap">ផ្ទាំងគ្រប់គ្រង</span>
+                    </button>
+                    <button id="customerInfoNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zm-1.5 6a4.5 4.5 0 00-4.5 4.5V18h9v-1.5A4.5 4.5 0 0011.5 12z" clip-rule="evenodd" fill-rule="evenodd" /></svg>
+                        <span class="whitespace-nowrap">ព័ត៌មានអតិថិជន</span>
+                    </button>
+                    <button id="historyNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2.75 9a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75z" fill-rule="evenodd" clip-rule="evenodd" /></svg>
+                        <span class="whitespace-nowrap">មើលប្រវត្តិទិន្នន័យ</span>
+                    </button>
+                </div>
             </div>
+            <button id="themeToggleBtn" class="p-2 rounded-md hover:bg-gray-200 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" id="lightIcon" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" id="darkIcon" class="h-6 w-6 text-gray-200 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0015.354 20.354 9.003 9.003 0 0020.354 15.354z" /></svg>
+            </button>
         </nav>
         
         <!-- Content Area -->
-        <div id="contentArea" class="content-area flex-grow">
+        <div id="contentArea" class="p-4 flex-grow">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
                 <div class="flex justify-between items-center mb-6">
                     <div class="text-center w-full">
                          <h1 class="text-3xl font-bold text-gray-800">កម្មវិធីគ្រប់គ្រងការលក់ Online</h1>
                          <p class="text-gray-500 mt-2">កត់ត្រា និងបោះពុម្ពវិក្កយបត្រលក់</p>
                     </div>
-                    <button id="themeToggleBtn" class="p-2 rounded-md hover:bg-gray-200 transition duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" id="lightIcon" class="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" id="darkIcon" class="h-6 w-6 text-gray-200 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0015.354 20.354 9.003 9.003 0 0020.354 15.354z" /></svg>
-                    </button>
                 </div>
                 <!-- Dashboard View -->
                 <div id="dashboardView" class="hidden">
@@ -485,6 +466,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         setLogLevel('debug');
@@ -1022,7 +1004,7 @@
                 await addDoc(collection(db, `artifacts/${appId}/public/data/invoices`), invoiceData);
                 
                 // Get the newly generated invoice number from the sorted array
-                const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp - a.timestamp);
+                const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp - b.timestamp);
                 const invoiceNumber = 'C' + (sortedInvoices.length + 1).toString().padStart(7, '0');
 
                 // Print the invoice
@@ -1080,24 +1062,25 @@
 
             // Create the invoice content HTML
             let invoiceHTML = `
-                <div class="p-8">
-                    <h1 class="text-2xl font-bold text-center mb-4">${storeName}</h1>
-                    <div class="text-sm mb-4">
-                        <p><strong>លេខវិក្កយបត្រ:</strong> ${invoiceNumber}</p>
-                        <p><strong>ឈ្មោះអតិថិជន:</strong> ${customerName} | <strong>លេខទូរស័ព្ទ:</strong> ${customerPhone}</p>
-                        <p><strong>អាសយដ្ឋាន:</strong> ${customerAddress}</p>
-                        <p><strong>ជម្រើសដឹកជញ្ជូន:</strong> ${deliveryOption} | <strong>ជម្រើសការទូទាត់:</strong> ${paymentOption}</p>
-                        <p><strong>កំណត់សម្គាល់:</strong> ${paymentNotes}</p>
-                        <p><strong>ថ្ងៃខែឆ្នាំ:</strong> ${formattedDate} (${formattedTime})</p>
+                <div class="invoice-print-section" style="width: 80mm; margin: 0 auto; padding: 5mm; box-sizing: border-box;">
+                    <h1 style="font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 5mm;">${storeName}</h1>
+                    <div style="font-size: 14px; line-height: 1.5; margin-bottom: 5mm;">
+                        <p style="margin: 0; font-weight: bold; text-align: center;">${invoiceNumber}</p>
+                        <p style="margin: 0;">ឈ្មោះអតិថិជន: <strong>${customerName}</strong></p>
+                        <p style="margin: 0;">លេខទូរស័ព្ទ: <strong>${customerPhone}</strong></p>
+                        <p style="margin: 0;">អាសយដ្ឋាន: <strong>${customerAddress}</strong></p>
+                        <p style="margin: 0;">ដឹកតាម: <strong>${deliveryOption}</strong> | ទូទាត់: <strong>${paymentOption}</strong></p>
+                        <p style="margin: 0;">កំណត់សម្គាល់: <strong>${paymentNotes}</strong></p>
+                        <p style="margin: 0; text-align: center;"><strong>${formattedDate} (${formattedTime})</strong></p>
                     </div>
-                    <hr class="mb-4">
-                    <table class="w-full">
+                    <hr style="border-top: 1px dashed #000; margin-bottom: 5mm;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                         <thead>
                             <tr>
-                                <th class="text-left">ឈ្មោះទំនិញ</th>
-                                <th class="text-right">ចំនួន</th>
-                                <th class="text-right">តម្លៃ</th>
-                                <th class="text-right">សរុប</th>
+                                <th style="text-align: left; font-weight: bold; padding: 2px 0;">ឈ្មោះទំនិញ</th>
+                                <th style="text-align: right; font-weight: bold; padding: 2px 0; width: 10mm;">ចំនួន</th>
+                                <th style="text-align: right; font-weight: bold; padding: 2px 0; width: 15mm;">តម្លៃ</th>
+                                <th style="text-align: right; font-weight: bold; padding: 2px 0; width: 15mm;">សរុប</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1106,10 +1089,10 @@
             invoiceData.items.forEach(item => {
                 invoiceHTML += `
                     <tr>
-                        <td>${item.name}</td>
-                        <td class="text-right">${item.quantity}</td>
-                        <td class="text-right">$${item.price.toFixed(2)}</td>
-                        <td class="text-right">$${item.total.toFixed(2)}</td>
+                        <td style="padding: 2px 0;">${item.name}</td>
+                        <td style="text-align: right; padding: 2px 0;">${item.quantity}</td>
+                        <td style="text-align: right; padding: 2px 0;">$${item.price.toFixed(2)}</td>
+                        <td style="text-align: right; padding: 2px 0;">$${item.total.toFixed(2)}</td>
                     </tr>
                 `;
             });
@@ -1118,16 +1101,16 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" class="text-right font-bold pt-4">តម្លៃទំនិញសរុប:</td>
-                                <td class="text-right font-bold pt-4">$${salesTotal.toFixed(2)}</td>
+                                <td colspan="3" style="text-align: right; font-weight: bold; padding-top: 5mm;">តម្លៃទំនិញសរុប:</td>
+                                <td style="text-align: right; font-weight: bold; padding-top: 5mm;">$${salesTotal.toFixed(2)}</td>
                             </tr>
                              <tr>
-                                <td colspan="3" class="text-right font-bold pt-4">តម្លៃសេវាដឹក:</td>
-                                <td class="text-right font-bold pt-4">$${deliveryFee.toFixed(2)}</td>
+                                <td colspan="3" style="text-align: right; font-weight: bold; padding-top: 2px;">តម្លៃសេវាដឹក:</td>
+                                <td style="text-align: right; font-weight: bold; padding-top: 2px;">$${deliveryFee.toFixed(2)}</td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right font-bold pt-4">តម្លៃសរុបទាំងអស់:</td>
-                                <td class="text-right font-bold pt-4">$${finalTotal.toFixed(2)}</td>
+                                <td colspan="3" style="text-align: right; font-weight: bold; padding-top: 2px;">តម្លៃសរុបទាំងអស់:</td>
+                                <td style="text-align: right; font-weight: bold; padding-top: 2px;">$${finalTotal.toFixed(2)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -1135,10 +1118,11 @@
             `;
 
             // Open a new window and write the invoice HTML
-            const printWindow = window.open('', '', 'height=600,width=800');
+            const printWindow = window.open('', '_blank', 'height=600,width=800');
             printWindow.document.write('<html><head><title>វិក្កយបត្រ</title>');
             printWindow.document.write('<style>');
-            printWindow.document.write('body{font-family: Arial, sans-serif; font-size: 14px;} table{width: 100%; border-collapse: collapse;} th, td{border: 1px solid #ddd; padding: 8px; text-align: left;}');
+            printWindow.document.write('@page { size: 80mm auto; margin: 0; }');
+            printWindow.document.write('body{font-family: Arial, sans-serif; font-size: 14px;} table{width: 100%; border-collapse: collapse;} th, td{padding: 2px 0; text-align: left;}');
             printWindow.document.write('</style>');
             printWindow.document.write('</head><body>');
             printWindow.document.write(invoiceHTML);
@@ -1268,24 +1252,7 @@
         if (startDateInput) startDateInput.addEventListener('change', updateDashboard);
         if (endDateInput) endDateInput.addEventListener('change', updateDashboard);
         
-        // --- Auto Side Menu In/Out with Hover ---
-        sideMenu.addEventListener('mouseenter', () => {
-            sideMenu.classList.add('expanded');
-            menuItems.style.display = 'flex';
-            expandIcon.style.display = 'none';
-            collapseIcon.style.display = 'block';
-            contentArea.classList.add('shifted');
-        });
-
-        sideMenu.addEventListener('mouseleave', () => {
-            sideMenu.classList.remove('expanded');
-            sideMenu.classList.add('collapsed');
-            menuItems.style.display = 'none';
-            expandIcon.style.display = 'block';
-            collapseIcon.style.display = 'none';
-            contentArea.classList.remove('shifted');
-        });
-
+        
         // Add search functionality
         if (searchQueryInput) {
             searchQueryInput.addEventListener('input', renderHistoryList);
@@ -1320,11 +1287,6 @@
 
         // Initial view load
         toggleView('dashboard');
-        sideMenu.classList.remove('expanded');
-        menuItems.style.display = 'none';
-        collapseIcon.style.display = 'none';
-        expandIcon.style.display = 'block';
-        contentArea.classList.remove('shifted');
     </script>
 </body>
 </html>
