@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>កម្មវិធីគ្រប់គ្រងការលក់ប្រចាំថ្ងៃ</title>
+    <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
+        /* Hide main content when printing, only show invoice section */
         .invoice-print-section {
             display: none;
         }
@@ -17,6 +19,7 @@
             body > *:not(.invoice-print-section) {
                 display: none;
             }
+            /* Styling for 80mm thermal receipt printer */
             .invoice-print-section {
                 display: block;
                 font-family: sans-serif;
@@ -55,6 +58,7 @@
             justify-content: center;
             gap: 16px;
         }
+        /* Loading Screen Styles */
         .loading-container {
             display: flex;
             flex-direction: column;
@@ -77,6 +81,7 @@
                 transform: rotate(360deg);
             }
         }
+        /* Hide repeated information in the history table (now card view) */
         .invoice-row:not(:first-child) .invoice-number-cell,
         .invoice-row:not(:first-child) .customer-info-cell {
             visibility: hidden;
@@ -516,7 +521,7 @@
         setLogLevel('debug');
         
         // --- Firebase Setup ---
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // Configuration details for your Firebase project
         const firebaseConfig = {
             apiKey: "AIzaSyDx53uucVLn2qZpKHgm4Zfmn0oq7IqWKDE",
             authDomain: "my-online-sale-re.firebaseapp.com",
@@ -547,8 +552,7 @@
             auth = getAuth(app);
             db = getFirestore(app);
             
-            // This listener was causing the custom token mismatch error.
-            // We'll replace it with a more robust async function to handle initial authentication.
+            // Function to handle authentication, preferring custom token but falling back to anonymous
             const initialAuth = async () => {
                 try {
                     const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -561,8 +565,7 @@
                     }
                 } catch (authError) {
                     console.warn("Custom token sign-in failed. Falling back to anonymous sign-in.", authError);
-                    // This is where the error from the user's report was caught.
-                    // Now, we gracefully fallback to anonymous sign-in.
+                    // Handle custom-token-mismatch error by retrying with anonymous sign-in
                     await signInAnonymously(auth);
                 }
 
@@ -593,6 +596,9 @@
             `;
         }
 
+        /**
+         * Loads public data (invoices and products) from Firestore using real-time listeners.
+         */
         async function loadPublicData() {
             loadingView.style.display = 'flex';
             mainApp.style.display = 'none';
@@ -605,9 +611,11 @@
                     unsubscribeProducts();
                 }
 
+                // Collection paths for public data
                 const invoicesCollectionRef = collection(db, `artifacts/${appId}/public/data/invoices`);
                 const productsCollectionRef = collection(db, `artifacts/${appId}/public/data/products`);
 
+                // Real-time listener for invoices (History)
                 unsubscribeInvoices = onSnapshot(invoicesCollectionRef, (querySnapshot) => {
                     historyInvoices = [];
                     querySnapshot.forEach((doc) => {
@@ -621,6 +629,7 @@
                     updateDashboard();
                 });
 
+                // Real-time listener for products (Add Item page list and datalist source)
                 unsubscribeProducts = onSnapshot(productsCollectionRef, (querySnapshot) => {
                     products = [];
                     querySnapshot.forEach((doc) => {
@@ -779,6 +788,7 @@
             debounceTimer = setTimeout(() => {
                 const phoneNumber = customerPhoneInput.value.trim();
                 if (phoneNumber.length > 5) {
+                    // Find the latest invoice for this phone number
                     const latestInvoice = historyInvoices.find(invoice => (invoice.customerPhone || '').trim() === phoneNumber);
                     if (latestInvoice) {
                         showConfirmation("អតិថិជនចាស់ តើអ្នកចង់អោយកម្មវិធីបំពេញជំនួសទេ", (result) => {
@@ -795,32 +805,33 @@
             customerNameInput.value = invoice.customerName || '';
             customerAddressInput.value = invoice.customerAddress || '';
             
-            // Uncheck all delivery options
+            // Reset and check the correct delivery option
             vetRadio.checked = false;
             jtRadio.checked = false;
             phnompenhRadio.checked = false;
             
-            // Check the correct delivery option
             if (invoice.deliveryOption === 'VET') vetRadio.checked = true;
             else if (invoice.deliveryOption === 'J&T') jtRadio.checked = true;
             else if (invoice.deliveryOption === 'ភ្នំពេញ') phnompenhRadio.checked = true;
         };
 
-        // Function to populate the product datalist with unique product names from history and products collection
+        // Function to populate the product datalist with unique product names
         const populateProductDatalist = () => {
             productNamesDatalist.innerHTML = '';
             const allProductNames = new Set();
+            // Add products from the separate products collection
+            products.forEach(product => {
+                if (product.name) {
+                    allProductNames.add(product.name);
+                }
+            });
+             // Add product names from existing invoice items as fallback/extras
             historyInvoices.forEach(invoice => {
                 invoice.items.forEach(item => {
                     if (item.name) {
                         allProductNames.add(item.name);
                     }
                 });
-            });
-            products.forEach(product => {
-                if (product.name) {
-                    allProductNames.add(product.name);
-                }
             });
 
             allProductNames.forEach(name => {
@@ -879,6 +890,14 @@
             }
 
             try {
+                // Check if product already exists (case-insensitive for simplicity)
+                const existingProduct = products.find(p => p.name.toLowerCase() === productName.toLowerCase());
+                
+                if (existingProduct) {
+                    showMessage('ទំនិញនេះមានរួចហើយនៅក្នុងបញ្ជី។');
+                    return;
+                }
+                
                 await addDoc(collection(db, `artifacts/${appId}/public/data/products`), {
                     name: productName,
                     price: productPrice,
@@ -893,10 +912,12 @@
             }
         };
 
-        // Function to render the list of products
+        // Function to render the list of products on the Add Item view
         const renderProductsList = () => {
             productsListBody.innerHTML = '';
-            products.forEach(product => {
+            // Sort products alphabetically
+            const sortedProducts = [...products].sort((a, b) => (a.name || "").localeCompare(b.name || "", 'km'));
+            sortedProducts.forEach(product => {
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50';
                 row.innerHTML = `
@@ -966,7 +987,7 @@
             renderSalesList();
         };
         
-        // Function to render the history list table
+        // Function to render the history list in a card view format
         const renderHistoryList = () => {
             const query = searchQueryInput.value.toLowerCase().trim();
             
@@ -1175,7 +1196,7 @@
             }
 
             try {
-                // Generate the sequential invoice number
+                // Generate the sequential invoice number (based on current total count + 1)
                 const newInvoiceNumber = 'C' + (historyInvoices.length + 1).toString().padStart(7, '0');
 
                 const invoiceData = {
@@ -1210,6 +1231,9 @@
             }
         };
         
+        /**
+         * Fetches an invoice by its ID and triggers the print function.
+         */
         const reprintInvoice = async (event) => {
             const docId = event.currentTarget.dataset.docId;
             const docRef = doc(db, `artifacts/${appId}/public/data/invoices`, docId);
@@ -1228,7 +1252,9 @@
             }
         };
 
-        // Function to print the invoice from local data
+        /**
+         * Renders the invoice data into a new print window (for thermal printer style).
+         */
         const printInvoice = (invoiceData, invoiceNumber) => {
             
             const now = new Date();
@@ -1331,26 +1357,30 @@
 
                 // Create CSV string
                 const headers = ["លេខវិក្កយបត្រ", "ឈ្មោះអតិថិជន", "លេខទូរស័ព្ទ", "អាសយដ្ឋាន", "ឈ្មោះហាង", "ឈ្មោះទំនិញ", "ចំនួន", "តម្លៃ", "ផលបូក", "ជម្រើសដឹកជញ្ជូន", "ជម្រើសការទូទាត់", "កំណត់សម្គាល់", "សេវាដឹក", "កាលបរិច្ឆេទ"];
+                // Add BOM for proper Khmer/UTF-8 display in Excel
                 let csv = "\uFEFF" + headers.join(',') + '\n';
                 
+                // Sort by date ascending for easier spreadsheet processing
                 const sortedInvoices = [...historyInvoices].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
                 
                 sortedInvoices.forEach((invoice, index) => {
-                    const invoiceNumber = 'C' + (index + 1).toString().padStart(7, '0');
+                    // Note: Use the stored invoiceNumber, not the index, but fallback is okay.
+                    const invoiceNumber = invoice.invoiceNumber || ('C' + (index + 1).toString().padStart(7, '0'));
                     invoice.items.forEach(item => {
+                        // Use quotes for string values to handle commas inside text
                         const values = [
-                            `"${invoice.invoiceNumber}"`,
-                            `"${invoice.customerName}"`,
-                            `"${invoice.customerPhone}"`,
-                            `"${invoice.customerAddress}"`,
-                            `"${invoice.storeName}"`,
-                            `"${item.name}"`,
+                            `"${invoiceNumber}"`,
+                            `"${invoice.customerName || ''}"`,
+                            `"${invoice.customerPhone || ''}"`,
+                            `"${invoice.customerAddress || ''}"`,
+                            `"${invoice.storeName || ''}"`,
+                            `"${item.name || ''}"`,
                             item.quantity,
                             item.price,
                             item.total,
-                            `"${invoice.deliveryOption}"`,
-                            `"${invoice.paymentOption}"`,
-                            `"${invoice.paymentNotes}"`,
+                            `"${invoice.deliveryOption || ''}"`,
+                            `"${invoice.paymentOption || ''}"`,
+                            `"${invoice.paymentNotes || ''}"`,
                             invoice.deliveryFee,
                             `"${invoice.timestamp.toDate()}"`
                         ];
@@ -1462,9 +1492,23 @@
         // Event listener for input on the itemName field to auto-populate the price
         itemNameInput.addEventListener('input', () => {
             const selectedItemName = itemNameInput.value.trim();
-            const product = products.find(p => p.name === selectedItemName);
+            // Check against products list first (which is the manually managed list)
+            let product = products.find(p => p.name === selectedItemName);
+            
+            // Fallback: If not found in managed products, try to find it in previous invoice history items
+            if (!product) {
+                for (const invoice of historyInvoices) {
+                    product = invoice.items.find(item => item.name === selectedItemName);
+                    if (product) break;
+                }
+            }
+            
             if (product) {
+                // Use the price from the found product/item
                 itemPriceInput.value = product.price.toFixed(2);
+            } else if (itemPriceInput.value === '') {
+                 // Clear price if item name doesn't match a product, unless the user has already entered a price
+                 itemPriceInput.value = '';
             }
         });
         
