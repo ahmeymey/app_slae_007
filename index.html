@@ -62,6 +62,21 @@
             justify-content: center;
             height: 100vh;
         }
+        /* Refined loading spinner */
+        .loading-spinner {
+            width: 64px;
+            height: 64px;
+            border: 4px solid rgba(139, 92, 246, 0.2);
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
         .invoice-row:not(:first-child) .invoice-number-cell,
         .invoice-row:not(:first-child) .customer-info-cell {
             visibility: hidden;
@@ -69,7 +84,7 @@
         /* Dark mode styles */
         body.dark-mode {
             background-color: #1a202c;
-            color: #e2e8f0; /* Light gray for readable text */
+            color: #e2e8f0;
         }
         body.dark-mode .bg-white {
             background-color: #2d3748;
@@ -87,12 +102,12 @@
         body.dark-mode .text-gray-700,
         body.dark-mode .text-gray-500,
         body.dark-mode .text-gray-800 {
-            color: #e2e8f0; /* Light gray for readable text */
+            color: #e2e8f0;
         }
-        body.dark-mode .bg-white.hover\\:bg-gray-100:hover {
+        body.dark-mode .bg-white.hover\:bg-gray-100:hover {
             background-color: #4a5568;
         }
-        body.dark-mode .hover\\:bg-gray-100:hover {
+        body.dark-mode .hover\:bg-gray-100:hover {
              background-color: #4a5568;
         }
         body.dark-mode .bg-indigo-50 {
@@ -147,7 +162,7 @@
     <!-- Loading message container -->
     <div id="loadingView" class="loading-container">
         <div class="flex flex-col items-center p-8 bg-white rounded-lg shadow-lg">
-            <div class="w-16 h-16 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin border-indigo-500"></div>
+            <div class="loading-spinner"></div>
             <p class="mt-4 text-gray-700 font-semibold">កំពុងផ្ទុកទិន្នន័យ...</p>
         </div>
     </div>
@@ -167,6 +182,12 @@
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zm-1.5 6a4.5 4.5 0 00-4.5 4.5V18h9v-1.5A4.5 4.5 0 0011.5 12z" clip-rule="evenodd" fill-rule="evenodd" /></svg>
                         <span class="whitespace-nowrap">ព័ត៌មានអតិថិជន</span>
                     </button>
+                    <button id="addItemNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="whitespace-nowrap">បន្ថែមទំនិញ</span>
+                    </button>
                     <button id="historyNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2.75 9a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75z" fill-rule="evenodd" clip-rule="evenodd" /></svg>
                         <span class="whitespace-nowrap">មើលប្រវត្តិទិន្នន័យ</span>
@@ -182,14 +203,14 @@
         <!-- Content Area -->
         <div id="contentArea" class="p-4 flex-grow">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 space-y-8">
-                <div class="flex justify-between items-center mb-6">
-                    <div class="text-center w-full">
-                         <h1 class="text-3xl font-bold text-gray-800">កម្មវិធីគ្រប់គ្រងការលក់ Online</h1>
-                         <p class="text-gray-500 mt-2">កត់ត្រា និងបោះពុម្ពវិក្កយបត្រលក់</p>
-                    </div>
-                </div>
                 <!-- Dashboard View -->
                 <div id="dashboardView" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="text-center w-full">
+                            <h1 class="text-3xl font-bold text-gray-800">កម្មវិធីគ្រប់គ្រងការលក់ Online</h1>
+                            <p class="text-gray-500 mt-2">កត់ត្រា និងបោះពុម្ពវិក្កយបត្រលក់</p>
+                        </div>
+                    </div>
                     <div class="bg-white rounded-lg p-6 shadow-md">
                         <h2 class="text-xl font-semibold text-gray-700 mb-4">ផ្ទាំងគ្រប់គ្រង</h2>
                         <div class="mb-6 flex space-x-4">
@@ -222,7 +243,7 @@
                 <!-- Main Sales Form View (now "ព័ត៌មានអតិថិជន") -->
                 <div id="customerInfoView" class="hidden">
                     <!-- Customer Information Form -->
-                    <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                    <div class="bg-white rounded-lg p-6 shadow-md space-y-4">
                         <h2 class="text-xl font-semibold text-gray-700">ព័ត៌មានអតិថិជន</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -295,6 +316,10 @@
                                         <input id="trueEmoneyCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                                         <label for="trueEmoneyCheckbox" class="ml-2 block text-sm text-gray-900">True Emoney</label>
                                     </div>
+                                    <div class="flex items-center">
+                                        <input id="byDelivererCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="byDelivererCheckbox" class="ml-2 block text-sm text-gray-900">តាមអ្នកដឹក</label>
+                                    </div>
                                 </div>
                                 <div>
                                     <label for="paymentNotes" class="block text-sm font-medium text-gray-700 mt-2">កំណត់សម្គាល់បន្ថែម</label>
@@ -313,12 +338,20 @@
                     </div>
 
                     <!-- Input Form -->
-                    <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                    <div class="bg-white rounded-lg p-6 shadow-md space-y-4 mt-6">
                         <h2 class="text-xl font-semibold text-gray-700">បញ្ចូលព័ត៌មានការលក់</h2>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div class="col-span-1 md:col-span-2">
                                 <label for="itemName" class="block text-sm font-medium text-gray-700">ឈ្មោះទំនិញ</label>
-                                <input type="text" id="itemName" placeholder="ដូចជា: ក្រែមលាបមុខ" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                                <div class="relative">
+                                    <input type="text" id="itemName" list="productNames" placeholder="ដូចជា: ក្រែមលាបមុខ" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                                    <svg class="absolute right-3 top-1/2 -mt-2.5 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <datalist id="productNames">
+                                    <!-- Dynamic options will be inserted here by JavaScript -->
+                                </datalist>
                             </div>
                             <div>
                                 <label for="itemQuantity" class="block text-sm font-medium text-gray-700">ចំនួន</label>
@@ -340,7 +373,7 @@
                     </div>
 
                     <!-- Sales Table -->
-                    <div class="bg-white rounded-lg p-6 shadow-md">
+                    <div class="bg-white rounded-lg p-6 shadow-md mt-6">
                         <h2 class="text-xl font-semibold text-gray-700 mb-4">បញ្ជីការលក់</h2>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -401,53 +434,64 @@
                     </div>
                 </div>
 
+                <!-- Add Item View -->
+                <div id="addItemView" class="hidden">
+                    <div class="bg-white rounded-lg p-6 shadow-md space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-700">បន្ថែមទំនិញថ្មី</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="newProductName" class="block text-sm font-medium text-gray-700">ឈ្មោះទំនិញ</label>
+                                <input type="text" id="newProductName" placeholder="ដូចជា: ក្រែមលាបមុខ" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                            <div>
+                                <label for="newProductPrice" class="block text-sm font-medium text-gray-700">តម្លៃ (ដុល្លារ)</label>
+                                <input type="number" id="newProductPrice" placeholder="0.00" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-4 space-x-2">
+                            <button id="addNewProductBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 shadow-sm">
+                                បន្ថែមទំនិញ
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-6 shadow-md mt-6">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">បញ្ជីទំនិញ</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ឈ្មោះទំនិញ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            តម្លៃ
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            លុប
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsList" class="bg-white divide-y divide-gray-200">
+                                    <!-- Product list will be inserted here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Data History View -->
                 <div id="historyView" class="hidden">
                     <div class="bg-white rounded-lg p-6 shadow-md">
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-xl font-semibold text-gray-700">ប្រវត្តិទិន្នន័យ</h2>
                         </div>
-                         <div class="mb-4">
+                        <div class="mb-4">
                             <label for="searchQuery" class="block text-sm font-medium text-gray-700">ស្វែងរក</label>
                             <input type="text" id="searchQuery" placeholder="ស្វែងរកតាមលេខវិក្កយបត្រ ឈ្មោះអតិថិជន លេខទូរស័ព្ទ ឬអាសយដ្ឋាន..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            លេខវិក្កយបត្រ
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ឈ្មោះអតិថិជន
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            លេខទូរស័ព្ទ
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            អាសយដ្ឋាន
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ឈ្មោះទំនិញ
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ចំនួន
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            តម្លៃ
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ផលបូក
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ជម្រើស
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="historyList" class="bg-white divide-y divide-gray-200">
-                                    <!-- History items will be inserted here by JavaScript -->
-                                </tbody>
-                            </table>
+                        <div id="historyListContainer" class="space-y-4">
+                            <!-- History items will be inserted here as cards by JavaScript -->
                         </div>
                         <!-- Action Buttons for History View -->
                         <div class="flex justify-center md:justify-end space-x-4 mt-6">
@@ -466,15 +510,13 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         setLogLevel('debug');
         
         // --- Firebase Setup ---
-        // Placeholder for Firebase configuration. You must replace this with your project's config.
-        // Go to your Firebase project settings -> Project settings -> General -> Your apps -> select your app
-        // Copy the "Firebase SDK snippet" and paste it here.
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
             apiKey: "AIzaSyDx53uucVLn2qZpKHgm4Zfmn0oq7IqWKDE",
             authDomain: "my-online-sale-re.firebaseapp.com",
@@ -487,26 +529,58 @@
         const appId = firebaseConfig.projectId;
 
         let db = null;
-        let unsubscribe = null;
-        let historyInvoices = []; 
+        let auth = null;
+        let userId = null;
+        let unsubscribeInvoices = null;
+        let unsubscribeProducts = null;
+        let historyInvoices = [];
+        let products = [];
         let currentInvoiceItems = [];
+        let isAuthReady = false;
 
         const mainApp = document.getElementById('mainApp');
         const loadingView = document.getElementById('loadingView');
-        const sideMenu = document.getElementById('sideMenu');
-        const contentArea = document.getElementById('contentArea');
-        const menuItems = document.getElementById('menuItems');
-        const collapseIcon = document.getElementById('collapseIcon');
-        const expandIcon = document.getElementById('expandIcon');
         
         let app = null;
         try {
-            if (firebaseConfig.projectId && firebaseConfig.apiKey && firebaseConfig.authDomain) {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-            } else {
-                throw new Error("Firebase configuration is missing. Please update firebaseConfig with your project's details.");
-            }
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            // This listener was causing the custom token mismatch error.
+            // We'll replace it with a more robust async function to handle initial authentication.
+            const initialAuth = async () => {
+                try {
+                    const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    if (token) {
+                        // Attempt to sign in with the custom token provided by the environment
+                        await signInWithCustomToken(auth, token);
+                    } else {
+                        // Fallback to anonymous sign-in if no token is available
+                        await signInAnonymously(auth);
+                    }
+                } catch (authError) {
+                    console.warn("Custom token sign-in failed. Falling back to anonymous sign-in.", authError);
+                    // This is where the error from the user's report was caught.
+                    // Now, we gracefully fallback to anonymous sign-in.
+                    await signInAnonymously(auth);
+                }
+
+                // After a successful sign-in (either way), get the current user.
+                const user = auth.currentUser;
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    console.log("Authenticated as user:", userId);
+                    loadPublicData();
+                } else {
+                    console.error("Authentication failed. No user object available.");
+                    loadingView.style.display = 'none';
+                    mainApp.style.display = 'flex';
+                    showMessage('ការផ្ទៀងផ្ទាត់បរាជ័យ។ សូមពិនិត្យមើលការកំណត់រចនាសម្ព័ន្ធ Firebase របស់អ្នក។');
+                }
+            };
+            initialAuth();
         } catch (error) {
             console.error("Firebase Initialization Error:", error);
             document.getElementById('loadingView').style.display = 'none';
@@ -524,9 +598,17 @@
             mainApp.style.display = 'none';
             
             try {
+                if (unsubscribeInvoices) {
+                    unsubscribeInvoices();
+                }
+                if (unsubscribeProducts) {
+                    unsubscribeProducts();
+                }
+
                 const invoicesCollectionRef = collection(db, `artifacts/${appId}/public/data/invoices`);
-                const q = query(invoicesCollectionRef);
-                unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const productsCollectionRef = collection(db, `artifacts/${appId}/public/data/products`);
+
+                unsubscribeInvoices = onSnapshot(invoicesCollectionRef, (querySnapshot) => {
                     historyInvoices = [];
                     querySnapshot.forEach((doc) => {
                         historyInvoices.push({
@@ -534,12 +616,26 @@
                             ...doc.data()
                         });
                     });
+                    populateProductDatalist();
                     renderHistoryList();
                     updateDashboard();
-                    
-                    loadingView.style.display = 'none';
-                    mainApp.style.display = 'flex';
                 });
+
+                unsubscribeProducts = onSnapshot(productsCollectionRef, (querySnapshot) => {
+                    products = [];
+                    querySnapshot.forEach((doc) => {
+                        products.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    renderProductsList();
+                    populateProductDatalist();
+                });
+                
+                loadingView.style.display = 'none';
+                mainApp.style.display = 'flex';
+                
             } catch (error) {
                 console.error("Firestore error:", error);
                 loadingView.style.display = 'none';
@@ -548,10 +644,6 @@
             }
         }
         
-        if (app) {
-            loadPublicData();
-        }
-
         // --- Modal/Message Box Functions ---
         const messageModal = document.getElementById('messageModal');
         const modalMessage = document.getElementById('modalMessage');
@@ -596,10 +688,10 @@
             });
         }
 
-
         // Get all necessary HTML elements
         const dashboardView = document.getElementById('dashboardView');
         const customerInfoView = document.getElementById('customerInfoView');
+        const addItemView = document.getElementById('addItemView');
         const historyView = document.getElementById('historyView');
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
@@ -617,15 +709,17 @@
         const abaCheckbox = document.getElementById('abaCheckbox');
         const wingCheckbox = document.getElementById('wingCheckbox');
         const trueEmoneyCheckbox = document.getElementById('trueEmoneyCheckbox');
+        const byDelivererCheckbox = document.getElementById('byDelivererCheckbox');
         const paymentNotesInput = document.getElementById('paymentNotes');
         const deliveryFeeInput = document.getElementById('deliveryFee');
         const itemNameInput = document.getElementById('itemName');
+        const productNamesDatalist = document.getElementById('productNames');
         const itemQuantityInput = document.getElementById('itemQuantity');
         const itemPriceInput = document.getElementById('itemPrice');
         const addItemBtn = document.getElementById('addItemBtn');
         const clearFormBtn = document.getElementById('clearFormBtn');
         const salesListBody = document.getElementById('salesList');
-        const historyListBody = document.getElementById('historyList');
+        const historyListContainer = document.getElementById('historyListContainer');
         const totalAmountDisplay = document.getElementById('totalAmount');
         const printBtn = document.getElementById('printBtn');
         const clearCurrentListBtn = document.getElementById('clearCurrentListBtn');
@@ -636,14 +730,20 @@
         const totalRevenueDisplay = document.getElementById('totalRevenue');
         const totalDeliveryFeeDisplay = document.getElementById('totalDeliveryFee');
 
+        // New elements for Add Item page
+        const newProductNameInput = document.getElementById('newProductName');
+        const newProductPriceInput = document.getElementById('newProductPrice');
+        const addNewProductBtn = document.getElementById('addNewProductBtn');
+        const productsListBody = document.getElementById('productsList');
+
         // Navigation buttons
         const dashboardNavBtn = document.getElementById('dashboardNavBtn');
         const customerInfoNavBtn = document.getElementById('customerInfoNavBtn');
+        const addItemNavBtn = document.getElementById('addItemNavBtn');
         const historyNavBtn = document.getElementById('historyNavBtn');
         const themeToggleBtn = document.getElementById('themeToggleBtn');
         const lightIcon = document.getElementById('lightIcon');
         const darkIcon = document.getElementById('darkIcon');
-
 
         // Function to handle exclusive checkbox selection for store names
         const handleStoreSelection = (selectedCheckbox) => {
@@ -655,7 +755,7 @@
         };
         // Function to handle exclusive checkbox selection for payment methods
         const handlePaymentSelection = (selectedCheckbox) => {
-            [acCheckbox, abaCheckbox, wingCheckbox, trueEmoneyCheckbox].forEach(checkbox => {
+            [acCheckbox, abaCheckbox, wingCheckbox, trueEmoneyCheckbox, byDelivererCheckbox].forEach(checkbox => {
                 if (checkbox !== selectedCheckbox) {
                     checkbox.checked = false;
                 }
@@ -669,6 +769,8 @@
         if (abaCheckbox) abaCheckbox.addEventListener('change', () => handlePaymentSelection(abaCheckbox));
         if (wingCheckbox) wingCheckbox.addEventListener('change', () => handlePaymentSelection(wingCheckbox));
         if (trueEmoneyCheckbox) trueEmoneyCheckbox.addEventListener('change', () => handlePaymentSelection(trueEmoneyCheckbox));
+        if (byDelivererCheckbox) byDelivererCheckbox.addEventListener('change', () => handlePaymentSelection(byDelivererCheckbox));
+
         
         // Autocomplete customer data from history
         let debounceTimer;
@@ -702,6 +804,30 @@
             if (invoice.deliveryOption === 'VET') vetRadio.checked = true;
             else if (invoice.deliveryOption === 'J&T') jtRadio.checked = true;
             else if (invoice.deliveryOption === 'ភ្នំពេញ') phnompenhRadio.checked = true;
+        };
+
+        // Function to populate the product datalist with unique product names from history and products collection
+        const populateProductDatalist = () => {
+            productNamesDatalist.innerHTML = '';
+            const allProductNames = new Set();
+            historyInvoices.forEach(invoice => {
+                invoice.items.forEach(item => {
+                    if (item.name) {
+                        allProductNames.add(item.name);
+                    }
+                });
+            });
+            products.forEach(product => {
+                if (product.name) {
+                    allProductNames.add(product.name);
+                }
+            });
+
+            allProductNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                productNamesDatalist.appendChild(option);
+            });
         };
 
         // Function to add a new item to the local sales list
@@ -740,6 +866,67 @@
             itemNameInput.focus();
             
             renderSalesList();
+        };
+        
+        // Function to add a new product to the database
+        const addNewProduct = async () => {
+            const productName = newProductNameInput.value.trim();
+            const productPrice = parseFloat(newProductPriceInput.value);
+
+            if (!productName || isNaN(productPrice) || productPrice <= 0) {
+                showMessage('សូមបញ្ចូលឈ្មោះទំនិញ និងតម្លៃឱ្យបានត្រឹមត្រូវ។');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/public/data/products`), {
+                    name: productName,
+                    price: productPrice,
+                    timestamp: new Date()
+                });
+                showMessage('បានបន្ថែមទំនិញថ្មីដោយជោគជ័យ។');
+                newProductNameInput.value = '';
+                newProductPriceInput.value = '';
+            } catch (e) {
+                console.error("Error adding new product:", e);
+                showMessage('មានបញ្ហាក្នុងការបន្ថែមទំនិញថ្មី។');
+            }
+        };
+
+        // Function to render the list of products
+        const renderProductsList = () => {
+            productsListBody.innerHTML = '';
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${product.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${product.price.toFixed(2)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button class="delete-product-db text-red-600 hover:text-red-900" data-doc-id="${product.id}">លុប</button>
+                    </td>
+                `;
+                productsListBody.appendChild(row);
+            });
+            document.querySelectorAll('.delete-product-db').forEach(button => {
+                button.addEventListener('click', deleteProductFromDB);
+            });
+        };
+
+        // Function to delete a product from the database
+        const deleteProductFromDB = (e) => {
+            const docId = e.currentTarget.dataset.docId;
+            showConfirmation('តើអ្នកពិតជាចង់លុបទំនិញនេះមែនទេ?', async (result) => {
+                if (result) {
+                    try {
+                        await deleteDoc(doc(db, `artifacts/${appId}/public/data/products`, docId));
+                        showMessage('បានលុបទំនិញដោយជោគជ័យ។');
+                    } catch (e) {
+                        console.error("Error removing product:", e);
+                        showMessage('មានបញ្ហាក្នុងការលុបទិន្នន័យ។ សូមព្យាយាមម្ដងទៀត។');
+                    }
+                }
+            });
         };
 
         // Function to render the current sales list table
@@ -783,75 +970,74 @@
         const renderHistoryList = () => {
             const query = searchQueryInput.value.toLowerCase().trim();
             
-            // Sort invoices by timestamp descending to ensure the most recent is at the top
             const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
-            
-            historyListBody.innerHTML = '';
+            historyListContainer.innerHTML = '';
 
             const filteredInvoices = sortedInvoices.filter((invoice) => {
                 const customerName = (invoice.customerName || '').toLowerCase();
                 const customerPhone = (invoice.customerPhone || '').toLowerCase();
                 const customerAddress = (invoice.customerAddress || '').toLowerCase();
-                const invoiceNumber = 'c' + (sortedInvoices.length - sortedInvoices.indexOf(invoice)).toString().padStart(7, '0');
+                const invoiceNumber = (invoice.invoiceNumber || '').toLowerCase();
+                const hasMatchingItem = invoice.items.some(item => (item.name || '').toLowerCase().includes(query));
 
                 return invoiceNumber.includes(query) ||
                        customerName.includes(query) ||
                        customerPhone.includes(query) ||
-                       customerAddress.includes(query);
+                       customerAddress.includes(query) ||
+                       hasMatchingItem;
             });
-            
+
             if (filteredInvoices.length === 0 && query.length > 0) {
-                 historyListBody.innerHTML = `
-                    <tr>
-                        <td colspan="10" class="px-6 py-4 text-center text-gray-500">
-                            រកមិនឃើញលទ្ធផលសម្រាប់ "${searchQueryInput.value}"
-                        </td>
-                    </tr>
-                `;
-                 return;
+                historyListContainer.innerHTML = `<p class="text-center text-gray-500">រកមិនឃើញលទ្ធផលសម្រាប់ "${searchQueryInput.value}"</p>`;
+                return;
             }
 
-            filteredInvoices.forEach((invoice, index) => {
-                const invoiceNumber = 'C' + (sortedInvoices.length - sortedInvoices.indexOf(invoice)).toString().padStart(7, '0');
+            filteredInvoices.forEach((invoice) => {
                 const invoiceDate = invoice.timestamp.toDate().toLocaleDateString('km-KH');
                 const invoiceTime = invoice.timestamp.toDate().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
 
-                invoice.items.forEach((item, itemIndex) => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
-                    if (itemIndex === 0) {
-                        row.classList.add('invoice-row');
-                    }
-                    
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 invoice-number-cell">
-                            ${invoiceNumber}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 customer-info-cell">
-                            ${invoice.customerName || 'N/A'}<br>
-                            <span class="text-xs text-gray-500">${invoiceDate} (${invoiceTime})</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 customer-info-cell">${invoice.customerPhone || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 customer-info-cell">${invoice.customerAddress || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.quantity}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${item.price.toFixed(2)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$${item.total.toFixed(2)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center gap-2">
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'bg-gray-100 rounded-lg shadow-sm p-4 hover:bg-gray-200 transition-colors duration-300';
+                
+                let itemsListHtml = '';
+                invoice.items.forEach(item => {
+                    itemsListHtml += `
+                        <div class="flex justify-between items-center text-sm py-1 border-b border-gray-300 last:border-b-0">
+                            <span class="text-gray-900 font-medium">${item.name}</span>
+                            <span class="text-gray-700">${item.quantity} x $${item.price.toFixed(2)}</span>
+                            <span class="text-gray-900 font-bold">$${item.total.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+
+                cardDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="font-bold text-gray-800">លេខវិក្កយបត្រ: ${invoice.invoiceNumber}</p>
+                            <p class="text-sm text-gray-600">អតិថិជន: ${invoice.customerName || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">ទូរស័ព្ទ: ${invoice.customerPhone || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">អាសយដ្ឋាន: ${invoice.customerAddress || 'N/A'}</p>
+                            <p class="text-xs text-gray-500 mt-2">${invoiceDate} (${invoiceTime})</p>
+                        </div>
+                        <div class="flex gap-2">
                              <button class="reprint-invoice text-blue-600 hover:text-blue-900" data-doc-id="${invoice.id}" title="បោះពុម្ពឡើងវិញ">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M5 4v3H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" />
+                                    <path d="M5 4v3H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" />
                                 </svg>
                             </button>
                             <button class="delete-item-db text-red-600 hover:text-red-900" data-doc-id="${invoice.id}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                             </button>
-                        </td>
-                    `;
-                    historyListBody.appendChild(row);
-                });
+                        </div>
+                    </div>
+                    <div class="mb-2 text-sm text-gray-700 font-semibold">បញ្ជីទំនិញ</div>
+                    <div class="bg-white p-2 rounded-md shadow-inner">
+                        ${itemsListHtml}
+                    </div>
+                `;
+                historyListContainer.appendChild(cardDiv);
             });
 
             document.querySelectorAll('.delete-item-db').forEach(button => {
@@ -861,10 +1047,10 @@
                 button.addEventListener('click', reprintInvoice);
             });
         };
-        
+
         // Function to delete an item from the database
         const deleteItemFromDB = async (e) => {
-            const docId = e.target.dataset.docId;
+            const docId = e.currentTarget.dataset.docId;
             try {
                 showConfirmation('តើអ្នកពិតជាចង់លុបវិក្កយបត្រនេះមែនទេ? ការលុបនេះមិនអាចយកមកវិញបានទេ។', async (result) => {
                     if (result) {
@@ -936,6 +1122,7 @@
             if (abaCheckbox.checked) options.push('ABA');
             if (wingCheckbox.checked) options.push('Wing');
             if (trueEmoneyCheckbox.checked) options.push('True Emoney');
+            if (byDelivererCheckbox.checked) options.push('តាមអ្នកដឹក');
             return options.join(', ') || 'មិនបានជ្រើសរើស';
         };
 
@@ -954,6 +1141,7 @@
             abaCheckbox.checked = false;
             wingCheckbox.checked = false;
             trueEmoneyCheckbox.checked = false;
+            byDelivererCheckbox.checked = false;
             paymentNotesInput.value = '';
             deliveryFeeInput.value = '';
             itemNameInput.value = '';
@@ -987,6 +1175,9 @@
             }
 
             try {
+                // Generate the sequential invoice number
+                const newInvoiceNumber = 'C' + (historyInvoices.length + 1).toString().padStart(7, '0');
+
                 const invoiceData = {
                     customerName: customerName,
                     customerPhone: customerPhone,
@@ -997,18 +1188,15 @@
                     deliveryFee: parseFloat(deliveryFeeInput.value) || 0,
                     storeName: getStoreName(),
                     items: currentInvoiceItems,
-                    timestamp: new Date()
+                    timestamp: new Date(),
+                    invoiceNumber: newInvoiceNumber
                 };
                 
                 // Save the entire invoice as a single document
                 await addDoc(collection(db, `artifacts/${appId}/public/data/invoices`), invoiceData);
                 
-                // Get the newly generated invoice number from the sorted array
-                const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp - b.timestamp);
-                const invoiceNumber = 'C' + (sortedInvoices.length + 1).toString().padStart(7, '0');
-
-                // Print the invoice
-                printInvoice(invoiceData, invoiceNumber);
+                // Print the invoice using the newly generated invoice number
+                printInvoice(invoiceData, newInvoiceNumber);
 
                 // Clear the local array after successful save and print
                 currentInvoiceItems = [];
@@ -1029,9 +1217,7 @@
                 const invoiceDoc = await getDoc(docRef);
                 if (invoiceDoc.exists()) {
                     const invoiceData = invoiceDoc.data();
-                    const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
-                    const invoiceIndex = sortedInvoices.findIndex(inv => inv.id === docId);
-                    const invoiceNumber = 'C' + (sortedInvoices.length - invoiceIndex).toString().padStart(7, '0');
+                    const invoiceNumber = invoiceData.invoiceNumber;
                     printInvoice(invoiceData, invoiceNumber);
                 } else {
                     showMessage('មិនអាចរកវិក្កយបត្រនេះឃើញទេ។');
@@ -1067,8 +1253,8 @@
                     <div style="font-size: 14px; line-height: 1.5; margin-bottom: 5mm;">
                         <p style="margin: 0; font-weight: bold; text-align: center;">${invoiceNumber}</p>
                         <p style="margin: 0;">ឈ្មោះអតិថិជន: <strong>${customerName}</strong></p>
-                        <p style="margin: 0;">លេខទូរស័ព្ទ: <strong>${customerPhone}</strong></p>
-                        <p style="margin: 0;">អាសយដ្ឋាន: <strong>${customerAddress}</strong></p>
+                        <p style="margin: 0;">លេខទូរស័ព្ទ: <strong style="font-size: 16px;">${customerPhone}</strong></p>
+                        <p style="margin: 0;">អាសយដ្ឋាន: <strong style="font-size: 16px;">${customerAddress}</strong></p>
                         <p style="margin: 0;">ដឹកតាម: <strong>${deliveryOption}</strong> | ទូទាត់: <strong>${paymentOption}</strong></p>
                         <p style="margin: 0;">កំណត់សម្គាល់: <strong>${paymentNotes}</strong></p>
                         <p style="margin: 0; text-align: center;"><strong>${formattedDate} (${formattedTime})</strong></p>
@@ -1109,8 +1295,8 @@
                                 <td style="text-align: right; font-weight: bold; padding-top: 2px;">$${deliveryFee.toFixed(2)}</td>
                             </tr>
                             <tr>
-                                <td colspan="3" style="text-align: right; font-weight: bold; padding-top: 2px;">តម្លៃសរុបទាំងអស់:</td>
-                                <td style="text-align: right; font-weight: bold; padding-top: 2px;">$${finalTotal.toFixed(2)}</td>
+                                <td colspan="3" style="text-align: right; font-weight: bold; padding-top: 2px; font-size: 16px;">តម្លៃសរុបទាំងអស់:</td>
+                                <td style="text-align: right; font-weight: bold; padding-top: 2px; font-size: 16px;">$${finalTotal.toFixed(2)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -1147,13 +1333,13 @@
                 const headers = ["លេខវិក្កយបត្រ", "ឈ្មោះអតិថិជន", "លេខទូរស័ព្ទ", "អាសយដ្ឋាន", "ឈ្មោះហាង", "ឈ្មោះទំនិញ", "ចំនួន", "តម្លៃ", "ផលបូក", "ជម្រើសដឹកជញ្ជូន", "ជម្រើសការទូទាត់", "កំណត់សម្គាល់", "សេវាដឹក", "កាលបរិច្ឆេទ"];
                 let csv = "\uFEFF" + headers.join(',') + '\n';
                 
-                const sortedInvoices = [...historyInvoices].sort((a, b) => a.timestamp - b.timestamp);
+                const sortedInvoices = [...historyInvoices].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
                 
                 sortedInvoices.forEach((invoice, index) => {
                     const invoiceNumber = 'C' + (index + 1).toString().padStart(7, '0');
                     invoice.items.forEach(item => {
                         const values = [
-                            `"${invoiceNumber}"`,
+                            `"${invoice.invoiceNumber}"`,
                             `"${invoice.customerName}"`,
                             `"${invoice.customerPhone}"`,
                             `"${invoice.customerAddress}"`,
@@ -1195,10 +1381,11 @@
         const toggleView = (viewToShow) => {
             dashboardView.style.display = 'none';
             customerInfoView.style.display = 'none';
+            addItemView.style.display = 'none';
             historyView.style.display = 'none';
 
             // Reset active button styles
-            [dashboardNavBtn, customerInfoNavBtn, historyNavBtn].forEach(btn => {
+            [dashboardNavBtn, customerInfoNavBtn, addItemNavBtn, historyNavBtn].forEach(btn => {
                 btn.classList.remove('bg-white');
             });
 
@@ -1208,6 +1395,9 @@
             } else if (viewToShow === 'customerInfo') {
                 customerInfoView.style.display = 'block';
                 customerInfoNavBtn.classList.add('bg-white');
+            } else if (viewToShow === 'addItem') {
+                addItemView.style.display = 'block';
+                addItemNavBtn.classList.add('bg-white');
             } else if (viewToShow === 'history') {
                 historyView.style.display = 'block';
                 historyNavBtn.classList.add('bg-white');
@@ -1240,9 +1430,14 @@
             downloadDataBtn.addEventListener('click', downloadDataAsCsv);
         }
         
+        if (addNewProductBtn) {
+            addNewProductBtn.addEventListener('click', addNewProduct);
+        }
+        
         // Navigation button listeners
         if (dashboardNavBtn) dashboardNavBtn.addEventListener('click', () => toggleView('dashboard'));
         if (customerInfoNavBtn) customerInfoNavBtn.addEventListener('click', () => toggleView('customerInfo'));
+        if (addItemNavBtn) addItemNavBtn.addEventListener('click', () => toggleView('addItem'));
         if (historyNavBtn) historyNavBtn.addEventListener('click', () => {
             searchQueryInput.value = '';
             renderHistoryList();
@@ -1251,7 +1446,6 @@
 
         if (startDateInput) startDateInput.addEventListener('change', updateDashboard);
         if (endDateInput) endDateInput.addEventListener('change', updateDashboard);
-        
         
         // Add search functionality
         if (searchQueryInput) {
@@ -1262,6 +1456,15 @@
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.target.id !== 'customerName' && e.target.id !== 'customerPhone' && e.target.id !== 'customerAddress') {
                 addItem();
+            }
+        });
+
+        // Event listener for input on the itemName field to auto-populate the price
+        itemNameInput.addEventListener('input', () => {
+            const selectedItemName = itemNameInput.value.trim();
+            const product = products.find(p => p.name === selectedItemName);
+            if (product) {
+                itemPriceInput.value = product.price.toFixed(2);
             }
         });
         
