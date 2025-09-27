@@ -52,6 +52,11 @@
             width: 90%;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        /* Overriding modal width for edit form */
+        #editModal .modal-content {
+            max-width: 550px;
+            text-align: left;
+        }
         .modal-buttons {
             margin-top: 16px;
             display: flex;
@@ -164,6 +169,47 @@
         </div>
     </div>
 
+    <!-- Modal for Editing Customer Info -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">កែប្រែព័ត៌មានអតិថិជន</h2>
+            <input type="hidden" id="editDocId">
+            <div class="space-y-3">
+                <div>
+                    <label for="editCustomerName" class="block text-sm font-medium text-gray-700">ឈ្មោះអតិថិជន</label>
+                    <input type="text" id="editCustomerName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                </div>
+                <div>
+                    <label for="editCustomerPhone" class="block text-sm font-medium text-gray-700">លេខទូរស័ព្ទ</label>
+                    <input type="text" id="editCustomerPhone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                </div>
+                <div>
+                    <label for="editCustomerAddress" class="block text-sm font-medium text-gray-700">អាសយដ្ឋាន</label>
+                    <input type="text" id="editCustomerAddress" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                </div>
+                
+                <div class="pt-2">
+                    <label for="editDeliveryOption" class="block text-sm font-medium text-gray-700">ជម្រើសសម្រាប់ការដឹកជញ្ជូន</label>
+                    <select id="editDeliveryOption" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        <option value="VET">VET</option>
+                        <option value="J&T">J&T</option>
+                        <option value="ភ្នំពេញ">ភ្នំពេញ</option>
+                        <option value="មិនបានជ្រើសរើស">មិនបានជ្រើសរើស</option>
+                    </select>
+                </div>
+                
+                 <div class="pt-2">
+                    <label for="editDeliveryFee" class="block text-sm font-medium text-gray-700">តម្លៃសេវាដឹក (ដុល្លារ)</label>
+                    <input type="number" id="editDeliveryFee" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="editSaveBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300">រក្សាទុក</button>
+                <button id="editCancelBtn" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-300">បោះបង់</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading message container -->
     <div id="loadingView" class="loading-container">
         <div class="flex flex-col items-center p-8 bg-white rounded-lg shadow-lg">
@@ -175,26 +221,27 @@
     <!-- Main Application Container -->
     <div id="mainApp" class="flex w-full flex-col hidden">
         <!-- Top Navigation Bar -->
-        <nav class="bg-gray-900 text-white p-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
+        <nav class="bg-gray-900 text-white p-4 flex items-center justify-between flex-wrap">
+            <div class="flex items-center gap-4 mb-2 sm:mb-0">
                 <div class="text-xl font-bold">កម្មវិធីគ្រប់គ្រងការលក់</div>
-                <div class="flex items-center space-x-2">
-                    <button id="dashboardNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                <!-- Nav buttons container: Use horizontal scroll and smaller gap/padding on mobile (sm: is for desktop size restore) -->
+                <div class="flex items-center space-x-1 overflow-x-auto pb-1 sm:space-x-2">
+                    <button id="dashboardNavBtn" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300 flex items-center gap-1.5 sm:px-4 sm:py-2 sm:text-base sm:gap-2">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                         <span class="whitespace-nowrap">ផ្ទាំងគ្រប់គ្រង</span>
                     </button>
-                    <button id="customerInfoNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zm-1.5 6a4.5 4.5 0 00-4.5 4.5V18h9v-1.5A4.5 4.5 0 0011.5 12z" clip-rule="evenodd" fill-rule="evenodd" /></svg>
+                    <button id="customerInfoNavBtn" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-1.5 sm:px-4 sm:py-2 sm:text-base sm:gap-2">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zm-1.5 6a4.5 4.5 0 00-4.5 4.5V18h9v-1.5A4.5 4.5 0 0011.5 12z" clip-rule="evenodd" fill-rule="evenodd" /></svg>
                         <span class="whitespace-nowrap">ព័ត៌មានអតិថិជន</span>
                     </button>
-                    <button id="addItemNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <button id="addItemNavBtn" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-1.5 sm:px-4 sm:py-2 sm:text-base sm:gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
                         <span class="whitespace-nowrap">បន្ថែមទំនិញ</span>
                     </button>
-                    <button id="historyNavBtn" class="px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2.75 9a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75z" fill-rule="evenodd" clip-rule="evenodd" /></svg>
+                    <button id="historyNavBtn" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 hover:bg-gray-100 transition duration-300 flex items-center gap-1.5 sm:px-4 sm:py-2 sm:text-base sm:gap-2">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2.75 9a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H2.75z" fill-rule="evenodd" clip-rule="evenodd" /></svg>
                         <span class="whitespace-nowrap">មើលប្រវត្តិទិន្នន័យ</span>
                     </button>
                 </div>
@@ -490,22 +537,34 @@
                     <div class="bg-white rounded-lg p-6 shadow-md">
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-xl font-semibold text-gray-700">ប្រវត្តិទិន្នន័យ</h2>
-                        </div>
-                        <div class="mb-4">
-                            <label for="searchQuery" class="block text-sm font-medium text-gray-700">ស្វែងរក</label>
-                            <input type="text" id="searchQuery" placeholder="ស្វែងរកតាមលេខវិក្កយបត្រ ឈ្មោះអតិថិជន លេខទូរស័ព្ទ ឬអាសយដ្ឋាន..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
-                        </div>
-                        <div id="historyListContainer" class="space-y-4">
-                            <!-- History items will be inserted here as cards by JavaScript -->
-                        </div>
-                        <!-- Action Buttons for History View -->
-                        <div class="flex justify-center md:justify-end space-x-4 mt-6">
-                            <button id="downloadDataBtn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 shadow-lg">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <!-- MOVED DOWNLOAD BUTTON TO TOP -->
+                            <button id="downloadDataBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 shadow-sm flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 11.586V3a1 1 0 112 0v8.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                                 ទាញយកទិន្នន័យ
                             </button>
+                        </div>
+                        <div class="mb-4 space-y-4 p-4 border rounded-md bg-gray-50">
+                            <h3 class="text-lg font-medium text-gray-700">តម្រងទិន្នន័យ (Filter)</h3>
+                             <div class="flex flex-col sm:flex-row gap-4">
+                                <div class="flex-1">
+                                    <label for="historyStartDate" class="block text-sm font-medium text-gray-700">ចាប់ពីថ្ងៃ</label>
+                                    <input type="date" id="historyStartDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                                </div>
+                                <div class="flex-1">
+                                    <label for="historyEndDate" class="block text-sm font-medium text-gray-700">ដល់ថ្ងៃ</label>
+                                    <input type="date" id="historyEndDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="searchQuery" class="block text-sm font-medium text-gray-700">ស្វែងរក</label>
+                                <input type="text" id="searchQuery" placeholder="ស្វែងរកតាមលេខវិក្កយបត្រ ឈ្មោះអតិថិជន លេខទូរស័ព្ទ ឬអាសយដ្ឋាន..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                            </div>
+                        </div>
+                        <div id="historyListContainer" class="space-y-4 mt-6">
+                            <!-- History items will be inserted here as cards by JavaScript -->
+                            <p class="text-center text-gray-500">កំពុងផ្ទុកប្រវត្តិទិន្នន័យ...</p>
                         </div>
                     </div>
                 </div>
@@ -516,7 +575,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         setLogLevel('debug');
         
@@ -661,6 +720,17 @@
         const confirmMessage = document.getElementById('confirmMessage');
         const confirmYesBtn = document.getElementById('confirmYesBtn');
         const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+        const editModal = document.getElementById('editModal');
+        const editDocIdInput = document.getElementById('editDocId');
+        const editCustomerNameInput = document.getElementById('editCustomerName');
+        const editCustomerPhoneInput = document.getElementById('editCustomerPhone');
+        const editCustomerAddressInput = document.getElementById('editCustomerAddress');
+        const editDeliveryOptionSelect = document.getElementById('editDeliveryOption');
+        const editDeliveryFeeInput = document.getElementById('editDeliveryFee');
+        const editSaveBtn = document.getElementById('editSaveBtn');
+        const editCancelBtn = document.getElementById('editCancelBtn');
+
         let confirmationCallback = null;
 
         const showMessage = (message) => {
@@ -704,6 +774,9 @@
         const historyView = document.getElementById('historyView');
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
+        
+        const historyStartDateInput = document.getElementById('historyStartDate');
+        const historyEndDateInput = document.getElementById('historyEndDate');
         
         const customerNameInput = document.getElementById('customerName');
         const customerPhoneInput = document.getElementById('customerPhone');
@@ -990,6 +1063,9 @@
         // Function to render the history list in a card view format
         const renderHistoryList = () => {
             const query = searchQueryInput.value.toLowerCase().trim();
+            const filterStartDate = historyStartDateInput.value ? new Date(historyStartDateInput.value) : null;
+            const filterEndDate = historyEndDateInput.value ? new Date(historyEndDateInput.value) : null;
+
             
             const sortedInvoices = [...historyInvoices].sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
             historyListContainer.innerHTML = '';
@@ -1001,11 +1077,29 @@
                 const invoiceNumber = (invoice.invoiceNumber || '').toLowerCase();
                 const hasMatchingItem = invoice.items.some(item => (item.name || '').toLowerCase().includes(query));
 
-                return invoiceNumber.includes(query) ||
+                // Date Filtering Logic
+                let matchesDate = true;
+                const invoiceDate = invoice.timestamp.toDate();
+                if (filterStartDate) {
+                    if (invoiceDate < filterStartDate) {
+                        matchesDate = false;
+                    }
+                }
+                if (filterEndDate) {
+                    const endOfDay = new Date(filterEndDate.getFullYear(), filterEndDate.getMonth(), filterEndDate.getDate(), 23, 59, 59);
+                    if (invoiceDate > endOfDay) {
+                        matchesDate = false;
+                    }
+                }
+
+                // Search Query Filtering Logic
+                const matchesSearch = invoiceNumber.includes(query) ||
                        customerName.includes(query) ||
                        customerPhone.includes(query) ||
                        customerAddress.includes(query) ||
                        hasMatchingItem;
+                       
+                return matchesDate && matchesSearch;
             });
 
             if (filteredInvoices.length === 0 && query.length > 0) {
@@ -1041,12 +1135,17 @@
                             <p class="text-xs text-gray-500 mt-2">${invoiceDate} (${invoiceTime})</p>
                         </div>
                         <div class="flex gap-2">
+                             <button class="edit-invoice text-orange-600 hover:text-orange-800" data-doc-id="${invoice.id}" title="កែប្រែព័ត៌មាន">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zm-3.136 9.142l-.788.788-5.61 5.61a1 1 0 01-1.414 0l-1.414-1.414a1 1 0 010-1.414l5.61-5.61.788-.788 4.243 4.243z" />
+                                </svg>
+                            </button>
                              <button class="reprint-invoice text-blue-600 hover:text-blue-900" data-doc-id="${invoice.id}" title="បោះពុម្ពឡើងវិញ">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M5 4v3H4a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" />
                                 </svg>
                             </button>
-                            <button class="delete-item-db text-red-600 hover:text-red-900" data-doc-id="${invoice.id}">
+                            <button class="delete-item-db text-red-600 hover:text-red-900" data-doc-id="${invoice.id}" title="លុបវិក្កយបត្រ">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
@@ -1067,8 +1166,77 @@
             document.querySelectorAll('.reprint-invoice').forEach(button => {
                 button.addEventListener('click', reprintInvoice);
             });
+            document.querySelectorAll('.edit-invoice').forEach(button => {
+                button.addEventListener('click', openEditModal);
+            });
         };
 
+        /**
+         * Opens the modal for editing customer information of a saved invoice.
+         */
+        const openEditModal = async (event) => {
+            const docId = event.currentTarget.dataset.docId;
+            const invoice = historyInvoices.find(inv => inv.id === docId);
+
+            if (!invoice) {
+                showMessage('មិនអាចរកវិក្កយបត្រនេះឃើញទេ។');
+                return;
+            }
+
+            editDocIdInput.value = docId;
+            editCustomerNameInput.value = invoice.customerName || '';
+            editCustomerPhoneInput.value = invoice.customerPhone || '';
+            editCustomerAddressInput.value = invoice.customerAddress || '';
+            editDeliveryOptionSelect.value = invoice.deliveryOption || 'មិនបានជ្រើសរើស';
+            editDeliveryFeeInput.value = (invoice.deliveryFee || 0).toFixed(2);
+
+            editModal.style.display = 'flex';
+        };
+
+        /**
+         * Saves the edited customer data back to Firestore.
+         */
+        const saveEditedInvoice = async () => {
+            const docId = editDocIdInput.value;
+            const updatedCustomerName = editCustomerNameInput.value.trim();
+            const updatedCustomerPhone = editCustomerPhoneInput.value.trim();
+            const updatedCustomerAddress = editCustomerAddressInput.value.trim();
+            const updatedDeliveryOption = editDeliveryOptionSelect.value;
+            const updatedDeliveryFee = parseFloat(editDeliveryFeeInput.value) || 0;
+
+            if (!updatedCustomerName || !updatedCustomerPhone || !updatedCustomerAddress) {
+                showMessage('សូមបំពេញឈ្មោះ លេខទូរស័ព្ទ និងអាសយដ្ឋាន។');
+                return;
+            }
+
+            try {
+                const docRef = doc(db, `artifacts/${appId}/public/data/invoices`, docId);
+                await updateDoc(docRef, {
+                    customerName: updatedCustomerName,
+                    customerPhone: updatedCustomerPhone,
+                    customerAddress: updatedCustomerAddress,
+                    deliveryOption: updatedDeliveryOption,
+                    deliveryFee: updatedDeliveryFee,
+                    updatedAt: new Date()
+                });
+
+                editModal.style.display = 'none';
+                showMessage('បានកែប្រែព័ត៌មានអតិថិជនដោយជោគជ័យ។');
+
+            } catch (e) {
+                console.error("Error updating document: ", e);
+                showMessage('មានបញ្ហាក្នុងការរក្សាទុកការកែប្រែ។ សូមព្យាយាមម្ដងទៀត។');
+            }
+        };
+
+        if (editSaveBtn) editSaveBtn.addEventListener('click', saveEditedInvoice);
+        if (editCancelBtn) editCancelBtn.addEventListener('click', () => editModal.style.display = 'none');
+        
+        // Event listeners for filter inputs
+        if (historyStartDateInput) historyStartDateInput.addEventListener('change', renderHistoryList);
+        if (historyEndDateInput) historyEndDateInput.addEventListener('change', renderHistoryList);
+        if (searchQueryInput) searchQueryInput.addEventListener('input', renderHistoryList);
+        
         // Function to delete an item from the database
         const deleteItemFromDB = async (e) => {
             const docId = e.currentTarget.dataset.docId;
@@ -1350,7 +1518,28 @@
         // Function to download data as CSV
         const downloadDataAsCsv = async () => {
             try {
-                if (historyInvoices.length === 0) {
+                // Apply date filters to the data being downloaded
+                const filterStartDate = historyStartDateInput.value ? new Date(historyStartDateInput.value) : null;
+                const filterEndDate = historyEndDateInput.value ? new Date(historyEndDateInput.value) : null;
+
+                const filteredInvoices = historyInvoices.filter(invoice => {
+                    let matchesDate = true;
+                    const invoiceDate = invoice.timestamp.toDate();
+                    if (filterStartDate) {
+                        if (invoiceDate < filterStartDate) {
+                            matchesDate = false;
+                        }
+                    }
+                    if (filterEndDate) {
+                        const endOfDay = new Date(filterEndDate.getFullYear(), filterEndDate.getMonth(), filterEndDate.getDate(), 23, 59, 59);
+                        if (invoiceDate > endOfDay) {
+                            matchesDate = false;
+                        }
+                    }
+                    return matchesDate;
+                });
+                
+                if (filteredInvoices.length === 0) {
                     showMessage('គ្មានទិន្នន័យដើម្បីទាញយកទេ។');
                     return;
                 }
@@ -1361,7 +1550,7 @@
                 let csv = "\uFEFF" + headers.join(',') + '\n';
                 
                 // Sort by date ascending for easier spreadsheet processing
-                const sortedInvoices = [...historyInvoices].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
+                const sortedInvoices = [...filteredInvoices].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
                 
                 sortedInvoices.forEach((invoice, index) => {
                     // Note: Use the stored invoiceNumber, not the index, but fallback is okay.
@@ -1469,18 +1658,19 @@
         if (customerInfoNavBtn) customerInfoNavBtn.addEventListener('click', () => toggleView('customerInfo'));
         if (addItemNavBtn) addItemNavBtn.addEventListener('click', () => toggleView('addItem'));
         if (historyNavBtn) historyNavBtn.addEventListener('click', () => {
-            searchQueryInput.value = '';
-            renderHistoryList();
+            // Re-render list with current filters/search when navigating to history
+            renderHistoryList(); 
             toggleView('history');
         });
 
+        // Dashboard filter listeners
         if (startDateInput) startDateInput.addEventListener('change', updateDashboard);
         if (endDateInput) endDateInput.addEventListener('change', updateDashboard);
         
-        // Add search functionality
-        if (searchQueryInput) {
-            searchQueryInput.addEventListener('input', renderHistoryList);
-        }
+        // History filter listeners
+        if (historyStartDateInput) historyStartDateInput.addEventListener('change', renderHistoryList);
+        if (historyEndDateInput) historyEndDateInput.addEventListener('change', renderHistoryList);
+        if (searchQueryInput) searchQueryInput.addEventListener('input', renderHistoryList);
 
         // Allow pressing Enter to add an item
         document.addEventListener('keypress', (e) => {
