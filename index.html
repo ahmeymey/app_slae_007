@@ -52,9 +52,16 @@
             width: 90%;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        /* Overriding modal width for edit form */
-        #editModal .modal-content {
+        /* Overriding modal width for edit form and rich messages */
+        #editModal .modal-content, #messageModal .modal-content {
             max-width: 550px;
+            text-align: left;
+        }
+        #messageModal .modal-content {
+             /* Reset alignment for main modal messages */
+            text-align: center;
+        }
+        #modalRichContent {
             text-align: left;
         }
         .modal-buttons {
@@ -152,6 +159,9 @@
     <div id="messageModal" class="modal">
         <div class="modal-content">
             <p id="modalMessage" class="text-lg font-semibold text-gray-800"></p>
+            <div id="modalRichContent" class="mt-4 text-left text-sm text-gray-700 space-y-1">
+                <!-- Rich content for conflict message goes here -->
+            </div>
             <div class="modal-buttons">
                 <button id="modalOkBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300">យល់ព្រម</button>
             </div>
@@ -350,8 +360,8 @@
 
                         <div class="mt-4">
                             <h3 class="text-sm font-medium text-gray-700">ជម្រើសការទូទាត់</h3>
-                            <div class="mt-2 space-y-2">
-                                <div class="flex items-center space-x-4">
+                            <div class="mt-2 space-y-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-1"> <!-- Updated spacing to be tighter -->
                                     <div class="flex items-center">
                                         <input id="acCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                                         <label for="acCheckbox" class="ml-2 block text-sm text-gray-900">AC</label>
@@ -368,13 +378,27 @@
                                         <input id="trueEmoneyCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                                         <label for="trueEmoneyCheckbox" class="ml-2 block text-sm text-gray-900">True Emoney</label>
                                     </div>
+                                    
+                                    <!-- NEW Checkbox for Other Bank -->
+                                    <div class="flex items-center">
+                                        <input id="otherBankCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        <label for="otherBankCheckbox" class="ml-2 block text-sm text-gray-900">ធនាគារផ្សេង</label>
+                                    </div>
+                                    
                                     <div class="flex items-center">
                                         <input id="byDelivererCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                                         <label for="byDelivererCheckbox" class="ml-2 block text-sm text-gray-900">តាមអ្នកដឹក</label>
                                     </div>
                                 </div>
+                                
+                                <!-- NEW INPUT for Other Bank/Payment Method -->
                                 <div>
-                                    <label for="paymentNotes" class="block text-sm font-medium text-gray-700 mt-2">កំណត់សម្គាល់បន្ថែម</label>
+                                    <label for="otherPaymentMethod" class="block text-sm font-medium text-gray-700 mt-2">ឈ្មោះធនាគារ/ការទូទាត់ផ្សេងទៀត</label>
+                                    <input type="text" id="otherPaymentMethod" placeholder="ដូចជា: ធនាគារ Wing Bank, វីង, ផ្សេងៗ..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                                </div>
+
+                                <div>
+                                    <label for="paymentNotes" class="block text-sm font-medium text-gray-700 mt-2">កំណត់សម្គាល់បន្ថែម (លេខ TxD)</label>
                                     <input type="text" id="paymentNotes" placeholder="ដាក់លេខTxd ..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
                                 </div>
                             </div>
@@ -650,7 +674,7 @@
             document.getElementById('contentArea').innerHTML = `
                 <div class="max-w-xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center text-red-600">
                     <p class="text-xl font-bold mb-4">មានបញ្ហាក្នុងការភ្ជាប់ Firebase!</p>
-                    <p>សូមបើកកូដរបស់អ្នក ហើយបន្លែមព័ត៌មាន <span class="font-mono">firebaseConfig</span> របស់គម្រោងអ្នក។</p>
+                    <p>សូមបើកកូដរបស់អ្នក ហើយបន្លែមព័តរមាន <span class="font-mono">firebaseConfig</span> របស់គម្រោងអ្នក។</p>
                 </div>
             `;
         }
@@ -720,6 +744,7 @@
         const confirmMessage = document.getElementById('confirmMessage');
         const confirmYesBtn = document.getElementById('confirmYesBtn');
         const confirmNoBtn = document.getElementById('confirmNoBtn');
+        const modalRichContent = document.getElementById('modalRichContent'); // New element for rich conflict message
 
         const editModal = document.getElementById('editModal');
         const editDocIdInput = document.getElementById('editDocId');
@@ -735,6 +760,13 @@
 
         const showMessage = (message) => {
             modalMessage.textContent = message;
+            modalRichContent.innerHTML = ''; // Clear rich content for simple messages
+            messageModal.style.display = 'flex';
+        };
+        
+        const showRichMessage = (title, htmlContent) => {
+            modalMessage.textContent = title;
+            modalRichContent.innerHTML = htmlContent;
             messageModal.style.display = 'flex';
         };
 
@@ -792,6 +824,8 @@
         const wingCheckbox = document.getElementById('wingCheckbox');
         const trueEmoneyCheckbox = document.getElementById('trueEmoneyCheckbox');
         const byDelivererCheckbox = document.getElementById('byDelivererCheckbox');
+        const otherBankCheckbox = document.getElementById('otherBankCheckbox'); // NEW
+        const otherPaymentMethodInput = document.getElementById('otherPaymentMethod'); // NEW
         const paymentNotesInput = document.getElementById('paymentNotes');
         const deliveryFeeInput = document.getElementById('deliveryFee');
         const itemNameInput = document.getElementById('itemName');
@@ -837,7 +871,7 @@
         };
         // Function to handle exclusive checkbox selection for payment methods
         const handlePaymentSelection = (selectedCheckbox) => {
-            [acCheckbox, abaCheckbox, wingCheckbox, trueEmoneyCheckbox, byDelivererCheckbox].forEach(checkbox => {
+            [acCheckbox, abaCheckbox, wingCheckbox, trueEmoneyCheckbox, byDelivererCheckbox, otherBankCheckbox].forEach(checkbox => {
                 if (checkbox !== selectedCheckbox) {
                     checkbox.checked = false;
                 }
@@ -847,11 +881,13 @@
         if (ccrOnlineCheckbox) ccrOnlineCheckbox.addEventListener('change', () => handleStoreSelection(ccrOnlineCheckbox));
         if (yl99CcrCheckbox) yl99CcrCheckbox.addEventListener('change', () => handleStoreSelection(yl99CcrCheckbox));
         if (ccr168Checkbox) ccr168Checkbox.addEventListener('change', () => handleStoreSelection(ccr168Checkbox));
+        
         if (acCheckbox) acCheckbox.addEventListener('change', () => handlePaymentSelection(acCheckbox));
         if (abaCheckbox) abaCheckbox.addEventListener('change', () => handlePaymentSelection(abaCheckbox));
         if (wingCheckbox) wingCheckbox.addEventListener('change', () => handlePaymentSelection(wingCheckbox));
         if (trueEmoneyCheckbox) trueEmoneyCheckbox.addEventListener('change', () => handlePaymentSelection(trueEmoneyCheckbox));
         if (byDelivererCheckbox) byDelivererCheckbox.addEventListener('change', () => handlePaymentSelection(byDelivererCheckbox));
+        if (otherBankCheckbox) otherBankCheckbox.addEventListener('change', () => handlePaymentSelection(otherBankCheckbox)); // NEW
 
         
         // Autocomplete customer data from history
@@ -1312,6 +1348,14 @@
             if (wingCheckbox.checked) options.push('Wing');
             if (trueEmoneyCheckbox.checked) options.push('True Emoney');
             if (byDelivererCheckbox.checked) options.push('តាមអ្នកដឹក');
+            
+            // NEW LOGIC: Include custom payment if available
+            if (otherBankCheckbox.checked && otherPaymentMethodInput.value.trim()) {
+                options.push(otherPaymentMethodInput.value.trim());
+            } else if (otherBankCheckbox.checked) {
+                 options.push('ធនាគារផ្សេង'); // Fallback if checked but no input
+            }
+            
             return options.join(', ') || 'មិនបានជ្រើសរើស';
         };
 
@@ -1331,6 +1375,8 @@
             wingCheckbox.checked = false;
             trueEmoneyCheckbox.checked = false;
             byDelivererCheckbox.checked = false;
+            otherBankCheckbox.checked = false; // NEW
+            otherPaymentMethodInput.value = ''; // NEW
             paymentNotesInput.value = '';
             deliveryFeeInput.value = '';
             itemNameInput.value = '';
@@ -1349,7 +1395,8 @@
             const customerName = customerNameInput.value.trim();
             const customerPhone = customerPhoneInput.value.trim();
             const customerAddress = customerAddressInput.value.trim();
-            
+            const paymentNotes = paymentNotesInput.value.trim(); // Get notes for saving
+
             if (!customerName) {
                 showMessage('សូមបញ្ចូលឈ្មោះអតិថិជន។');
                 return;
@@ -1362,6 +1409,19 @@
                 showMessage('សូមបញ្ចូលអាសយដ្ឋានអតិថិជន។');
                 return;
             }
+            
+            // Re-check for TxD/Payment Notes conflict just before saving
+            if (paymentNotes.length > 0) {
+                 const conflictingInvoice = historyInvoices.find(invoice => 
+                    (invoice.paymentNotes || '').trim().toLowerCase() === paymentNotes.toLowerCase()
+                );
+
+                if (conflictingInvoice) {
+                    showTxDConflict('កំណត់សម្គាល់នេះត្រូវបានប្រើប្រាស់រួចហើយនៅក្នុងប្រព័ន្ធ។ សូមកែតម្រូវ ឬបន្តប្រសិនបើអ្នកប្រាកដ។', conflictingInvoice);
+                    return; // Stop saving to allow user to confirm/cancel
+                }
+            }
+
 
             try {
                 // Generate the sequential invoice number (based on current total count + 1)
@@ -1373,7 +1433,7 @@
                     customerAddress: customerAddress,
                     deliveryOption: getDeliveryOptions(),
                     paymentOption: getPaymentOptions(),
-                    paymentNotes: paymentNotesInput.value.trim(),
+                    paymentNotes: paymentNotes,
                     deliveryFee: parseFloat(deliveryFeeInput.value) || 0,
                     storeName: getStoreName(),
                     items: currentInvoiceItems,
@@ -1398,6 +1458,56 @@
                 showMessage('មានបញ្ហាក្នុងការរក្សាទុកវិក្កយបត្រ។');
             }
         };
+
+        // Payment Notes/TxD conflict check function
+        const showTxDConflict = (title, invoice) => {
+            const itemsHtml = invoice.items.map(item => 
+                `<li class="ml-4 list-disc">${item.name} (${item.quantity} x $${item.price.toFixed(2)})</li>`
+            ).join('');
+
+            const date = invoice.timestamp.toDate().toLocaleDateString('km-KH');
+            const time = invoice.timestamp.toDate().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
+            const invoiceNumber = invoice.invoiceNumber || 'N/A';
+            const totalAmount = invoice.items.reduce((sum, item) => sum + item.total, 0) + (invoice.deliveryFee || 0);
+
+            const htmlContent = `
+                <p class="text-red-600 font-bold mb-3">${title}</p>
+                <div class="bg-red-50 p-3 rounded-md border border-red-200 space-y-1 text-gray-800">
+                    <p><strong>លេខវិក្កយបត្រ៖</strong> ${invoiceNumber}</p>
+                    <p><strong>ឈ្មោះអតិថិជន៖</strong> ${invoice.customerName || 'N/A'}</p>
+                    <p><strong>លេខទូរស័ព្ទ៖</strong> ${invoice.customerPhone || 'N/A'}</p>
+                    <p><strong>អាសយដ្ឋាន៖</strong> ${invoice.customerAddress || 'N/A'}</p>
+                    <p><strong>ជម្រើសហាង៖</strong> ${invoice.storeName || 'N/A'}</p>
+                    <p><strong>សរុប៖</strong> $${totalAmount.toFixed(2)}</p>
+                    <p><strong>កាលបរិច្ឆេទបញ្ជាទិញ៖</strong> ${date} (${time})</p>
+                    <p class="font-bold mt-2">ទំនិញដែលបានបញ្ជាទិញ៖</p>
+                    <ul class="text-sm text-gray-700">
+                        ${itemsHtml}
+                    </ul>
+                </div>
+            `;
+
+            showRichMessage('សូមពិនិត្យមើលឡើងវិញ!', htmlContent);
+        };
+        
+        // Add event listener for paymentNotesInput
+        paymentNotesInput.addEventListener('input', () => {
+            const txd = paymentNotesInput.value.trim();
+            // Only perform check if it's long enough to be a meaningful ID
+            if (txd.length > 5) { 
+                const conflictingInvoice = historyInvoices.find(invoice => 
+                    (invoice.paymentNotes || '').trim().toLowerCase() === txd.toLowerCase()
+                );
+
+                if (conflictingInvoice) {
+                    showTxDConflict('លេខសម្គាល់TxD/កំណត់សម្គាល់នេះមានរួចហើយនៅក្នុងប្រព័ន្ធ!', conflictingInvoice);
+                }
+            } else if (messageModal.style.display === 'flex' && modalRichContent.innerHTML !== '') {
+                // If modal is currently showing a rich conflict message, clear it if the input is now empty/short
+                // This prevents the user from being stuck if they correct the input
+                messageModal.style.display = 'none';
+            }
+        });
         
         /**
          * Fetches an invoice by its ID and triggers the print function.
@@ -1440,6 +1550,10 @@
             const deliveryFee = invoiceData.deliveryFee || 0;
             const finalTotal = salesTotal + deliveryFee;
 
+            // REMOVED: delivererAmountDisplay logic
+            let delivererAmountDisplay = '';
+
+
             // Create the invoice content HTML
             let invoiceHTML = `
                 <div class="invoice-print-section" style="width: 80mm; margin: 0 auto; padding: 5mm; box-sizing: border-box;">
@@ -1449,7 +1563,7 @@
                         <p style="margin: 0;">ឈ្មោះអតិថិជន: <strong>${customerName}</strong></p>
                         <p style="margin: 0;">លេខទូរស័ព្ទ: <strong style="font-size: 16px;">${customerPhone}</strong></p>
                         <p style="margin: 0;">អាសយដ្ឋាន: <strong style="font-size: 16px;">${customerAddress}</strong></p>
-                        <p style="margin: 0;">ដឹកតាម: <strong>${deliveryOption}</strong> | ទូទាត់: <strong>${paymentOption}</strong></p>
+                        <p style="margin: 0;">ដឹកតាម: <strong>${deliveryOption}</strong> | ទូទាត់: <strong>${paymentOption}${delivererAmountDisplay}</strong></p>
                         <p style="margin: 0;">កំណត់សម្គាល់: <strong>${paymentNotes}</strong></p>
                         <p style="margin: 0; text-align: center;"><strong>${formattedDate} (${formattedTime})</strong></p>
                     </div>
@@ -1545,7 +1659,7 @@
                 }
 
                 // Create CSV string
-                const headers = ["លេខវិក្កយបត្រ", "ឈ្មោះអតិថិជន", "លេខទូរស័ព្ទ", "អាសយដ្ឋាន", "ឈ្មោះហាង", "ឈ្មោះទំនិញ", "ចំនួន", "តម្លៃ", "ផលបូក", "ជម្រើសដឹកជញ្ជូន", "ជម្រើសការទូទាត់", "កំណត់សម្គាល់", "សេវាដឹក", "កាលបរិច្ឆេទ"];
+                const headers = ["លេខវិក្កយបត្រ", "ឈ្មោះអតិថិជន", "លេខទូរស័ព្ទ", "អាសយដ្ឋាន", "ឈ្មោះហាង", "ឈ្មោះទំនិញ", "ចំនួន", "តម្លៃ", "ផលបូក", "ជម្រើសដឹកជញ្ជូន", "ជម្រើសការទូទាត់", "កំណត់សម្គាល់", "សេវាដឹក", "កាលបរិច្ឆេទ"]; // UPDATED HEADERS (Removed "ចំនួនអ្នកដឹកប្រមូល")
                 // Add BOM for proper Khmer/UTF-8 display in Excel
                 let csv = "\uFEFF" + headers.join(',') + '\n';
                 
@@ -1571,6 +1685,7 @@
                             `"${invoice.paymentOption || ''}"`,
                             `"${invoice.paymentNotes || ''}"`,
                             invoice.deliveryFee,
+                            // invoice.byDelivererAmount || 0, // REMOVED FIELD
                             `"${invoice.timestamp.toDate()}"`
                         ];
                         csv += values.join(',') + '\n';
