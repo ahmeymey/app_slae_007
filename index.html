@@ -233,7 +233,6 @@
         <!-- Top Navigation Bar -->
         <nav class="bg-gray-900 text-white p-4 flex items-center justify-between flex-wrap">
             <div class="flex items-center gap-4 mb-2 sm:mb-0">
-                <div class="text-xl font-bold">កម្មវិធីគ្រប់គ្រងការលក់</div>
                 <!-- Nav buttons container: Use horizontal scroll and smaller gap/padding on mobile (sm: is for desktop size restore) -->
                 <div class="flex items-center space-x-1 overflow-x-auto pb-1 sm:space-x-2">
                     <button id="dashboardNavBtn" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 bg-white hover:bg-gray-100 transition duration-300 flex items-center gap-1.5 sm:px-4 sm:py-2 sm:text-base sm:gap-2">
@@ -287,7 +286,7 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div class="bg-indigo-50 p-6 rounded-lg shadow-sm">
-                                <p class="text-sm text-indigo-700 font-medium">ចំនួនការលក់សរុប</p>
+                                <p class="text-sm text-indigo-700 font-medium">ចំនួនការលក់សរុប (វិក្កយបត្រ)</p>
                                 <p id="totalSalesCount" class="text-3xl font-bold text-indigo-800 mt-1">0</p>
                             </div>
                             <div class="bg-green-50 p-6 rounded-lg shadow-sm">
@@ -361,32 +360,33 @@
                         <div class="mt-4">
                             <h3 class="text-sm font-medium text-gray-700">ជម្រើសការទូទាត់</h3>
                             <div class="mt-2 space-y-4">
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-1"> <!-- Updated spacing to be tighter -->
+                                <!-- UPDATED: Changed grid to grid-cols-6 for a single row layout -->
+                                <div class="grid grid-cols-6 gap-x-2 gap-y-1"> 
                                     <div class="flex items-center">
                                         <input id="acCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="acCheckbox" class="ml-2 block text-sm text-gray-900">AC</label>
+                                        <label for="acCheckbox" class="ml-1 block text-sm text-gray-900 whitespace-nowrap">AC</label>
                                     </div>
                                     <div class="flex items-center">
                                         <input id="abaCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="abaCheckbox" class="ml-2 block text-sm text-gray-900">ABA</label>
+                                        <label for="abaCheckbox" class="ml-1 block text-sm text-gray-900 whitespace-nowrap">ABA</label>
                                     </div>
                                     <div class="flex items-center">
                                         <input id="wingCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="wingCheckbox" class="ml-2 block text-sm text-gray-900">Wing</label>
+                                        <label for="wingCheckbox" class="ml-1 block text-sm text-gray-900 whitespace-nowrap">Wing</label>
                                     </div>
                                     <div class="flex items-center">
                                         <input id="trueEmoneyCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="trueEmoneyCheckbox" class="ml-2 block text-sm text-gray-900">True Emoney</label>
+                                        <label for="trueEmoneyCheckbox" class="ml-1 block text-sm text-gray-900 whitespace-nowrap">True Emoney</label>
                                     </div>                                    
                                     <div class="flex items-center">
                                         <input id="byDelivererCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="byDelivererCheckbox" class="ml-2 block text-sm text-gray-900">តាមអ្នកដឹក</label>
+                                        <label for="byDelivererCheckbox" class="ml-1 block text-sm text-gray-900 whitespace-nowrap">តាមអ្នកដឹក</label>
                                     </div>
                                 
                                     <!-- NEW Checkbox for Other Bank -->
                                     <div class="flex items-center">
                                         <input id="otherBankCheckbox" type="checkbox" name="payment" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                                        <label for="otherBankCheckbox" class="ml-2 block text-sm text-gray-900">ធនាគារផ្សេង</label>
+                                        <label for="otherBankCheckbox" class="ml-1 block text-sm text-gray-900 whitespace-nowrap">ធនាគារផ្សេង</label>
                                     </div>
 
                                 </div>
@@ -886,30 +886,39 @@
         const cleanPhoneNumber = (numberString) => (numberString || '').replace(/\D/g, '');
 
         /**
-         * Formats the phone number input with spaces every three digits.
-         * This function handles the visual formatting on the input element.
+         * Formats the phone number input to the Cambodian standard (max 10 digits, 0-prefix, XXX XXX XXXX spacing).
          * @param {HTMLInputElement} input - The phone input element.
          */
         const formatPhoneNumber = (input) => {
-            const cleanNumber = cleanPhoneNumber(input.value);
+            let cleanNumber = cleanPhoneNumber(input.value);
             
-            // Apply formatting (group of 3 digits separated by space)
+            // 1. Auto '0' Prefix Logic (only if the field is not empty and doesn't start with 0)
+            // This is handled in the input event listener for better control, but included here
+            // to ensure integrity if the format is called elsewhere.
+            if (cleanNumber.length > 0 && cleanNumber[0] !== '0') {
+                 // Prepend '0' if they started with another digit
+                 cleanNumber = '0' + cleanNumber;
+            }
+
+            // 2. Limit length to max 10 digits
+            const MAX_DIGITS = 10;
+            cleanNumber = cleanNumber.substring(0, MAX_DIGITS);
+
+            // 3. Apply Formatting: XXX XXX XXXX (Space after 3rd and 6th digits only)
             let formattedNumber = '';
-            for (let i = 0; i < cleanNumber.length; i++) {
-                formattedNumber += cleanNumber[i];
-                // Add space after every 3 digits, unless it's the last digit
-                if ((i + 1) % 3 === 0 && i !== cleanNumber.length - 1) {
-                    formattedNumber += ' ';
-                }
+            
+            if (cleanNumber.length > 0) {
+                formattedNumber += cleanNumber.substring(0, 3);
+            }
+            if (cleanNumber.length > 3) {
+                formattedNumber += ' ' + cleanNumber.substring(3, 6);
+            }
+            if (cleanNumber.length > 6) {
+                // Digits 7 to 10 (no more spaces)
+                formattedNumber += ' ' + cleanNumber.substring(6, 10);
             }
             
-            // Limit total characters shown (12 digits + max 3 spaces = 15 characters)
-            const maxLength = 15; 
-            if (formattedNumber.length > maxLength) { 
-                 formattedNumber = formattedNumber.substring(0, maxLength);
-            }
-            
-            input.value = formattedNumber.trim();
+            input.value = formattedNumber;
         };
 
         // --- Conditional Display Logic for Other Payment Input ---
@@ -965,17 +974,46 @@
         // Autocomplete customer data from history
         let debounceTimer;
         customerPhoneInput.addEventListener('input', () => {
-            // 1. Format the phone number display
+            // Store the current cursor position and the clean value before formatting
+            const currentCursorPos = customerPhoneInput.selectionStart;
+            let currentClean = cleanPhoneNumber(customerPhoneInput.value);
+            
+            // --- NEW: Auto '0' Prefix Logic (Handle prepend and cursor adjustment) ---
+            let prependZero = false;
+            if (currentClean.length > 0 && currentClean[0] !== '0') {
+                 currentClean = '0' + currentClean;
+                 prependZero = true;
+            }
+
+            // Set the value (with potential prepended '0') and format
+            customerPhoneInput.value = currentClean;
             formatPhoneNumber(customerPhoneInput);
 
+            // --- Cursor Position Adjustment (simplified) ---
+            let newCursorPos = currentCursorPos;
+            if (prependZero) {
+                 newCursorPos++; // Move cursor one step forward due to prepended '0'
+            }
+            
+            // Adjust for spaces added/removed by formatPhoneNumber
+            // Note: This relies on the browser handling the cursor reasonably well.
+            // Explicitly handling the 3/6 digit boundary jumps is difficult and fragile.
+            // We just ensure the cursor position is valid within the new formatted text.
+            if (newCursorPos > 0 && newCursorPos < customerPhoneInput.value.length) {
+                // If the user was typing at the point where a space was inserted, move cursor past the space
+                if (customerPhoneInput.value.charAt(newCursorPos - 1) === ' ' && originalValue.charAt(currentCursorPos - 1) !== ' ') {
+                   newCursorPos++;
+                }
+            }
+            customerPhoneInput.setSelectionRange(newCursorPos, newCursorPos);
+
+            // --- Autocomplete Logic ---
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                // 2. Perform lookup using the cleaned number
-                const currentCleanPhone = cleanPhoneNumber(customerPhoneInput.value);
-                if (currentCleanPhone.length >= 7) { 
-                    // Find the latest invoice where the CLEANED saved number matches the CURRENT CLEANED number
+                const finalCleanPhone = cleanPhoneNumber(customerPhoneInput.value);
+                if (finalCleanPhone.length >= 7) { 
                     const latestInvoice = historyInvoices
-                        .filter(invoice => cleanPhoneNumber(invoice.customerPhone) === currentCleanPhone)
+                        .filter(invoice => cleanPhoneNumber(invoice.customerPhone) === finalCleanPhone)
                         .sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate())[0];
                     
                     if (latestInvoice) {
@@ -993,8 +1031,9 @@
             customerNameInput.value = invoice.customerName || '';
             customerAddressInput.value = invoice.customerAddress || '';
             
-            // Re-format the phone number pulled from history to match the display format
-            customerPhoneInput.value = formatPhoneNumber({ value: invoice.customerPhone || '' });
+            // Use the formatter to clean up the historical phone number value when filling
+            customerPhoneInput.value = invoice.customerPhone || '';
+            formatPhoneNumber(customerPhoneInput); 
 
             // Reset and check the correct delivery option
             vetRadio.checked = false;
@@ -1010,19 +1049,11 @@
         const populateProductDatalist = () => {
             productNamesDatalist.innerHTML = '';
             const allProductNames = new Set();
-            // Add products from the separate products collection
+            // Add products only from the dedicated products collection (as requested)
             products.forEach(product => {
                 if (product.name) {
                     allProductNames.add(product.name);
                 }
-            });
-             // Add product names from existing invoice items as fallback/extras
-            historyInvoices.forEach(invoice => {
-                invoice.items.forEach(item => {
-                    if (item.name) {
-                        allProductNames.add(item.name);
-                    }
-                });
             });
 
             allProductNames.forEach(name => {
@@ -1229,7 +1260,7 @@
             if (filteredInvoices.length === 0 && historyInvoices.length > 0) {
                  // Check if there are no results due to filter/search, but there is data overall
                 const filterActive = filterStartDate || filterEndDate || query.length > 0;
-                historyListContainer.innerHTML = `<p class="text-center text-gray-500">${filterActive ? `រកមិនឃើញលទ្ធផលសម្រាប់តម្រងដែលបានជ្រើសរើស។` : 'គ្មានទិន្នន័យប្រវត្តិ។'}</p>`;
+                historyListContainer.innerHTML = `<p class="text-center text-gray-500">${filterActive ? `រកមិនឃើញលទ្ធផលសម្រាប់តម្រងដែលបានជ្រើសរើសទេ។` : 'គ្មានទិន្នន័យប្រវត្តិ។'}</p>`;
                 return;
             } else if (historyInvoices.length === 0) {
                 // Case: Firestore data is genuinely empty
@@ -1390,7 +1421,7 @@
 
         // Function to update all dashboard metrics
         const updateDashboard = () => {
-            let totalSalesCount = 0;
+            let totalSalesCount = 0; // This will now count invoices/transactions
             let totalRevenue = 0;
             let totalDeliveryFee = 0;
             
@@ -1416,9 +1447,12 @@
                 return matchesDate;
             });
 
+            // Set total sales count to the number of filtered invoices
+            totalSalesCount = filteredInvoices.length;
+
             filteredInvoices.forEach(invoice => {
                 invoice.items.forEach(item => {
-                    totalSalesCount += item.quantity; // Count total quantity sold
+                    // Accumulate total revenue from item sales
                     totalRevenue += item.total;
                 });
                 totalDeliveryFee += invoice.deliveryFee;
@@ -1973,10 +2007,13 @@
             
             // Fallback: If not found in managed products, try to find it in previous invoice history items
             if (!product) {
+                // The user requested to remove this fallback check:
+                /*
                 for (const invoice of historyInvoices) {
                     product = invoice.items.find(item => item.name === selectedItemName);
                     if (product) break;
                 }
+                */
             }
             
             if (product) {
